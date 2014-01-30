@@ -18,18 +18,18 @@ What you'll do is create a tab- or comma-separated "scoring file" that looks lik
 
 x|x|x|x
 -|-|-|-
-layout | header | |
-layout | data... | |
-exclude | PPT_COL | bad_ppt1 |
-exclude | PPT_COL | bad_ppt2 |
-transform | normal | map(1:5, 1:5) |
-transform | reverse | map(1:5, 5:1) |
-score | PPT_COL | |
+layout | header | x | x
+layout | data... | x | x
+exclude | PPT_COL | bad_ppt1 | x
+exclude | PPT_COL | bad_ppt2 | x
+transform | normal | map(1:5, 1:5) | x
+transform | reverse | map(1:5, 5:1) | x
+score | PPT_COL | x | x
 score | HAPPY_Q1 | HAPPY | normal
 score | SAD_Q1 | SAD | normal
 score | HAPPY_Q2 | HAPPY | reverse
-measure | HAPPY_SCORE | mean(HAPPY) |
-measure | SAD_SCORE | mean(SAD) |
+measure | HAPPY_SCORE | mean(HAPPY) | x
+measure | SAD_SCORE | mean(SAD) | x
 
 When run on data that contains PPT_COL, HAPPY_Q1, SAD_Q1, and HAPPY_Q2 columns, the output will be:
 
