@@ -16,8 +16,8 @@ Scorify aims to fix this.
 
 What you'll do is create a tab- or comma-separated "scoring file" that looks like:
 
-x|x|x|x
--|-|-|-
+x | x | x | x
+--|---|---|--
 layout | header | x | x
 layout | data... | x | x
 exclude | PPT_COL | bad_ppt1 | x
