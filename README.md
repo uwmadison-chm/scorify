@@ -16,20 +16,20 @@ Scorify aims to fix this.
 
 What you'll do is create a tab- or comma-separated "scoring file" that looks like:
 
-x | x | x | x
---|---|---|--
-layout | header | x | x
-layout | data... | x | x
-exclude | PPT_COL | bad_ppt1 | x
-exclude | PPT_COL | bad_ppt2 | x
-transform | normal | map(1:5, 1:5) | x
-transform | reverse | map(1:5, 5:1) | x
-score | PPT_COL | x | x
-score | HAPPY_Q1 | HAPPY | normal
-score | SAD_Q1 | SAD | normal
-score | HAPPY_Q2 | HAPPY | reverse
-measure | HAPPY_SCORE | mean(HAPPY) | x
-measure | SAD_SCORE | mean(SAD) | x
+<table>
+<tr><td>layout</td><td>header</td><td></td></tr>
+<tr><td>layout</td><td>data...</td><td></td></tr>
+<tr><td>exclude</td>td><td>PPT_COL</td>td><td>bad_ppt1</td></tr>
+<tr><td>exclude</td>td><td>PPT_COL</td>td><td>bad_ppt2</td></tr>
+<tr><td>transform</td><td>normal</td><td>map(1:5, 1:5)</td></tr>
+<tr><td>transform</td><td>reverse</td><td>map(1:5, 5:1)</td></tr>
+<tr><td>score</td>td><td>PPT_COL</td><td></td></tr>
+<tr><td>score</td>td><td>HAPPY_Q1</td>td><td>HAPPY</td><td>normal</td></tr>
+<tr><td>score</td>td><td>SAD_Q1</td>td><td>SAD</td><td>normal</td></tr>
+<tr><td>score</td>td><td>HAPPY_Q2</td>td><td>HAPPY</td><td>reverse</td></tr>
+<tr><td>measure</td>td><td>HAPPY_SCORE</td><td>mean(HAPPY)</td></tr>
+<tr><td>measure</td>td><td>SAD_SCORE</td><td>mean(SAD)</td></tr>
+</table>
 
 When run on data that contains PPT_COL, HAPPY_Q1, SAD_Q1, and HAPPY_Q2 columns, the output will be:
 
