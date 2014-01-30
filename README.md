@@ -3,7 +3,6 @@ scorify
 
 A simple tool for scoring psychological self-report questionnaires.
 
-
 ## Background
 
 Many psychology studies use one or more self-report questionnaires to understand their participants. Generally, these are recorded by software programs that let you download a CSV file of the results, one participant per row, one question per column.
