@@ -1,3 +1,4 @@
+# coding: utf8
 version = "0.1dev"
 author = "Nathan Vack"
 author_email = "njvack@wisc.edu"
