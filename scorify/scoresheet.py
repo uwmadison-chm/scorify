@@ -4,11 +4,21 @@
 
 
 class Scoresheet(object):
-    pass
+    def __init__(self):
+        self.errors = []
+        self.layout_section = None
+        self.exclusion_section = None
+        self.transform_section = None
+        self.score_section = None
+        self.measure_section = None
 
 
 class Reader(object):
-    pass
+    def __init__(self, data=None):
+        self.data = data
+
+    def read_into_scoresheet(self):
+        return Scoresheet()
 
 
 class LayoutSection(object):
@@ -17,6 +27,7 @@ class LayoutSection(object):
         self.errors = []
 
     def is_valid(self):
+        self.errors = []
         headers = [d for d in self.layout_directives if d.info == 'header']
         if len(headers) > 1:
             self.errors.append('you can only have one header in your layout')

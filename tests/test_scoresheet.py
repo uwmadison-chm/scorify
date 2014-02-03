@@ -8,6 +8,36 @@ from scorify import scoresheet
 from scorify import directives
 
 
+@pytest.fixture
+def good_sample_csv():
+    import StringIO
+    import csv
+    return csv.reader(StringIO.StringIO("""
+    layout,header
+    layout,skip
+    layout,data
+
+    exclude,ppt,0000
+    exclude,ppt,9999
+
+    transform,normal,map(1:5,1:5)
+    transform,reverse,map(1:5,5:1)
+
+    score,happy1,happy,normal
+    score,sad1,sad,reverse
+    score,happy2,happy,reverse
+    score,sad2,sad,normal
+
+    measure,mean_happy,mean(happy)
+    measure,mean_sad,mean(sad)
+    """))
+
+
+def test_successful_read(good_sample_csv):
+    reader = scoresheet.Reader(good_sample_csv)
+    ss = reader.read_into_scoresheet()
+    assert type(ss) == scoresheet.Scoresheet
+
 def test_layout_section():
     skip = directives.Layout('skip')
     header = directives.Layout('header')
