@@ -15,4 +15,6 @@ def test_layout_accepts_header_skip_data():
     assert directives.Layout('header')
     assert directives.Layout('data')
     assert directives.Layout('skip')
+    assert directives.Layout(' skip ')
     assert directives.Layout('SKIP')
+

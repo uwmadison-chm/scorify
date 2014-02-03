@@ -39,14 +39,12 @@ class Layout(object):
     """
 
     def __init__(self, info):
-        info_lower = info.lower()
+        info_lower = info.strip().lower()
         if not info_lower in set(['header', 'data', 'skip']):
-            raise DirectiveError("Didn't understand layout {0}".format(info))
+            raise DirectiveError("Didn't understand layout {0!r}".format(info))
 
         self.info = info_lower
         super(Layout, self).__init__()
-
-
 
 
 class Exclude(object):
