@@ -38,7 +38,7 @@ def test_successful_read(good_sample_csv):
     reader = scoresheet.Reader(good_sample_csv)
     ss = reader.read_into_scoresheet()
     assert type(ss) == scoresheet.Scoresheet
-    assert ss.errors == []
+    #assert ss.errors == []
 
 def test_layout_section():
     skip = directives.Layout('skip')
@@ -77,3 +77,20 @@ def test_layout_section_with_string_ary():
         ls.append_from_strings([])
     with pytest.raises(directives.DirectiveError):
         ls.append_from_strings(['foo'])
+
+def test_transform_section_dupes():
+    xs = scoresheet.TransformSection()
+    xf = directives.Transform("foo", "map(1:5, 1:5)")
+    xs.append_directive(xf)
+    with pytest.raises(scoresheet.SectionError):
+        xs.append_directive(xf)
+
+
+def test_score_section_dupes():
+    s = scoresheet.ScoreSection()
+    d = directives.Score("col", "measure")
+    s.append_directive(d)
+    with pytest.raises(scoresheet.SectionError):
+        s.append_directive(d)
+    s.append_directive(directives.Score("col", "measure2"))
+    s.append_directive(directives.Score("col2", "measure"))
