@@ -109,6 +109,11 @@ class Measure(object):
     measure MEASURE_1_MEAN mean(MEASURE_1)
     """
 
+    def __init__(self, name, agg_fx):
+        self.name = name
+        self.agg_fx = agg_fx
+        super(Measure, self).__init__()
+
 
 class DirectiveError(ValueError):
     pass
