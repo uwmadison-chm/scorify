@@ -38,7 +38,12 @@ def test_successful_read(good_sample_csv):
     reader = scoresheet.Reader(good_sample_csv)
     ss = reader.read_into_scoresheet()
     assert type(ss) == scoresheet.Scoresheet
-    #assert ss.errors == []
+    assert ss.errors == []
+    assert len(ss.layout_section) == 3
+    assert len(ss.transform_section) == 2
+    assert len(ss.score_section) == 4
+    assert len(ss.measure_section) == 2
+
 
 def test_layout_section():
     skip = directives.Layout('skip')
@@ -69,21 +74,23 @@ def test_layout_section():
     ls = scoresheet.LayoutSection([data,header])
     assert not ls.is_valid()
 
+
 def test_layout_section_with_string_ary():
     ls = scoresheet.LayoutSection()
     ls.append_from_strings(['header'])
-    assert len(ls.directives) == 1
+    assert len(ls) == 1
     with pytest.raises(directives.DirectiveError):
         ls.append_from_strings([])
     with pytest.raises(directives.DirectiveError):
         ls.append_from_strings(['foo'])
 
 def test_transform_section_dupes():
-    xs = scoresheet.TransformSection()
-    xf = directives.Transform("foo", "map(1:5, 1:5)")
-    xs.append_directive(xf)
+    s = scoresheet.TransformSection()
+    d = directives.Transform("foo", "map(1:5, 1:5)")
+    s.append_directive(d)
     with pytest.raises(scoresheet.SectionError):
-        xs.append_directive(xf)
+        s.append_directive(d)
+    assert len(s.directives) == 1
 
 
 def test_score_section_dupes():
@@ -94,3 +101,13 @@ def test_score_section_dupes():
         s.append_directive(d)
     s.append_directive(directives.Score("col", "measure2"))
     s.append_directive(directives.Score("col2", "measure"))
+    assert len(s.directives) == 3
+
+
+def test_measure_section_dupes():
+    s = scoresheet.MeasureSection()
+    d = directives.Measure('foo', 'mean(bar)')
+    s.append_directive(d)
+    with pytest.raises(scoresheet.SectionError):
+        s.append_directive(d)
+    assert len(s.directives) == 1

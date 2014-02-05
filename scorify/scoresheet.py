@@ -13,7 +13,7 @@ class Scoresheet(object):
         self.exclude_section = ExcludeSection()
         self.transform_section = TransformSection()
         self.score_section = ScoreSection()
-        self.measure_section = None
+        self.measure_section = MeasureSection()
 
     def add_error(self, line_number, message):
         self.errors.append(ScoresheetMessage(line_number, message))
@@ -37,7 +37,8 @@ class Reader(object):
             'layout': sheet.layout_section,
             'exclude' : sheet.exclude_section,
             'transform': sheet.transform_section,
-            'score': sheet.score_section
+            'score': sheet.score_section,
+            'measure': sheet.measure_section
         }
         layout_lines = []
         exclusion_lines = []
@@ -51,18 +52,24 @@ class Reader(object):
             line_params = stripped_parts[1:]
             try:
                 sect = section_map[line_type]
+                sect.append_from_strings(line_params)
             except KeyError:
                 sheet.add_error(
                     self.data.line_num,
                     "I don't understand {0}".format(line_type))
+            except (SectionError, directives.DirectiveError) as exc:
+                sheet.add_error(self.data.line_num, exc.message)
         return sheet
+
 
 class SectionError(ValueError):
     pass
 
 
 class Section(object):
-    def __init__(self, directives=[]):
+    def __init__(self, directives=None):
+        if directives is None:
+            directives = []
         super(Section, self).__init__()
         self.directives = directives
         self.errors = []
@@ -73,9 +80,12 @@ class Section(object):
     def append_directive(self, directive):
         self.directives.append(directive)
 
+    def __len__(self):
+        return len(self.directives)
+
 
 class LayoutSection(Section):
-    def __init__(self, directives=[]):
+    def __init__(self, directives=None):
         super(LayoutSection, self).__init__(directives)
 
     def is_valid(self):
@@ -110,7 +120,7 @@ class LayoutSection(Section):
 
 
 class ExcludeSection(Section):
-    def __init__(self, directives=[]):
+    def __init__(self, directives=None):
         super(ExcludeSection, self).__init__(directives)
 
     def append_from_strings(self, string_list):
@@ -125,7 +135,7 @@ class ExcludeSection(Section):
 
 
 class TransformSection(Section):
-    def __init__(self, directives=[]):
+    def __init__(self, directives=None):
         super(TransformSection, self).__init__(directives)
 
     def append_from_strings(self, string_list):
@@ -144,7 +154,7 @@ class TransformSection(Section):
         super(TransformSection, self).append_directive(directive)
 
 class ScoreSection(Section):
-    def __init__(self, directives=[]):
+    def __init__(self, directives=None):
         super(ScoreSection, self).__init__(directives)
 
     def append_from_strings(self, string_list):
@@ -171,3 +181,23 @@ class ScoreSection(Section):
             raise SectionError("{0} is already part of {1}".format(
                 column, measure_name))
         super(ScoreSection, self).append_directive(directive)
+
+class MeasureSection(Section):
+    def __init__(self, directives=None):
+        super(MeasureSection, self).__init__(directives)
+
+    def append_from_strings(self, string_list):
+        if len(string_list) < 2:
+            raise directives.DirectiveError(
+                "measures must have a name and aggregator function")
+        name = string_list[0]
+        agg_fx = string_list[1]
+        d = directives.Measure(name, agg_fx)
+        super(MeasureSection, self).append_directive(d)
+
+    def append_directive(self, directive):
+        name = directive.name
+        dupes = [d for d in self.directives if d.name == name]
+        if len(dupes) > 0:
+            raise SectionError("{0} is already a measure name".format(name))
+        super(MeasureSection, self).append_directive(directive)
