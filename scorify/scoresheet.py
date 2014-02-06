@@ -182,6 +182,7 @@ class ScoreSection(Section):
                 column, measure_name))
         super(ScoreSection, self).append_directive(directive)
 
+
 class MeasureSection(Section):
     def __init__(self, directives=None):
         super(MeasureSection, self).__init__(directives)
