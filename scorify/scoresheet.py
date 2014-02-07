@@ -57,7 +57,10 @@ class Reader(object):
                 sheet.add_error(
                     self.data.line_num,
                     "I don't understand {0}".format(line_type))
-            except (SectionError, directives.DirectiveError) as exc:
+            except (
+                SectionError,
+                directives.DirectiveError,
+                mappings.MappingError) as exc:
                 sheet.add_error(self.data.line_num, exc.message)
         return sheet
 
