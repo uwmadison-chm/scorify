@@ -4,8 +4,7 @@
 
 import pytest
 
-from scorify import scoresheet
-from scorify import directives
+from scorify import scoresheet, directives
 
 
 @pytest.fixture

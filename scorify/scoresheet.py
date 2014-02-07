@@ -25,8 +25,8 @@ ScoresheetMessage = namedtuple('ScoresheetMessage', ['line', 'message'])
 class Reader(object):
     def __init__(self, data=None):
         """
-        data should be a csv.Reader-like object. Notably, it should be interable,
-        return a list per iteration, and support line_number.
+        data should be a csv.Reader-like object. Notably, it should be
+        iterable, return a list per iteration, and support line_number.
         """
         self.data = data
 
@@ -115,7 +115,8 @@ class LayoutSection(Section):
         figure that out.
         """
         if len(string_list) < 1:
-            raise directives.DirectiveError("layout must be 'header', 'data', or 'skip'")
+            raise directives.DirectiveError(
+                "layout must be 'header', 'data', or 'skip'")
         self.append_directive(directives.Layout(string_list[0]))
 
 
