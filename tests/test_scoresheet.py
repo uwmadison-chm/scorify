@@ -83,6 +83,7 @@ def test_layout_section_with_string_ary():
     with pytest.raises(directives.DirectiveError):
         ls.append_from_strings(['foo'])
 
+
 def test_transform_section_dupes():
     s = scoresheet.TransformSection()
     d = directives.Transform("foo", "map(1:5, 1:5)")
@@ -90,6 +91,13 @@ def test_transform_section_dupes():
     with pytest.raises(scoresheet.SectionError):
         s.append_directive(d)
     assert len(s.directives) == 1
+
+
+def test_transform_section_getitem():
+    s = scoresheet.TransformSection()
+    d = directives.Transform("foo", "map(1:5, 1:5)")
+    s.append_directive(d)
+    assert s['foo'] == d
 
 
 def test_score_section_dupes():

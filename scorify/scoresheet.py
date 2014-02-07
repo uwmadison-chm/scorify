@@ -140,6 +140,7 @@ class ExcludeSection(Section):
 
 class TransformSection(Section):
     def __init__(self, directives=None):
+        self.transform_dict = {}
         super(TransformSection, self).__init__(directives)
 
     def append_from_strings(self, string_list):
@@ -147,7 +148,7 @@ class TransformSection(Section):
             raise directives.DirectiveError(
                 "transform must have a name and transformation")
         name, xform = string_list[0], string_list[1]
-        self.directives.append(directives.Transform(name, xform))
+        self.append_directive(directives.Transform(name, xform))
 
     def append_directive(self, directive):
         name = directive.name
@@ -155,7 +156,12 @@ class TransformSection(Section):
         if len(dupes) > 0:
             raise SectionError(
                 "there's already a transform called {0}".format(name))
+        self.transform_dict[name] = directive
         super(TransformSection, self).append_directive(directive)
+
+    def __getitem__(self, name):
+        return self.transform_dict[name]
+
 
 class ScoreSection(Section):
     def __init__(self, directives=None):
