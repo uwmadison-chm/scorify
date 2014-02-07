@@ -2,6 +2,8 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
+import mappings
+
 """
 Directives define operations we'll be performing on our input data files.
 A scoresheet defines a set of directives; directive will be run on the input.
@@ -76,6 +78,7 @@ class Transform(object):
     def __init__(self, name, fx_def):
         self.name = name
         self.fx_def = fx_def
+        self.mapping = mappings.Mapping.from_string(fx_def)
         super(Transform, self).__init__()
 
 
