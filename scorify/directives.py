@@ -81,6 +81,9 @@ class Transform(object):
         self.mapping = mappings.Mapping.from_string(fx_def)
         super(Transform, self).__init__()
 
+    def transform(self, value):
+        return self.mapping.transform(value)
+
 
 class Score(object):
     """
