@@ -100,6 +100,11 @@ def test_transform_section_getitem():
     assert s['foo'] == d
 
 
+def test_transform_section_getitem_with_blank():
+    s = scoresheet.TransformSection()
+    assert type(s['']) == directives.Transform
+
+
 def test_score_section_dupes():
     s = scoresheet.ScoreSection()
     d = directives.Score("col", "measure")

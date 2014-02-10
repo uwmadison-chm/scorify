@@ -139,9 +139,10 @@ class ExcludeSection(Section):
 
 
 class TransformSection(Section):
-    def __init__(self, directives=None):
+    def __init__(self, directive_list=None):
+        super(TransformSection, self).__init__(directive_list)
         self.transform_dict = {}
-        super(TransformSection, self).__init__(directives)
+        self.identity_transform = directives.Transform('', '')
 
     def append_from_strings(self, string_list):
         if len(string_list) < 2:
@@ -160,6 +161,8 @@ class TransformSection(Section):
         super(TransformSection, self).append_directive(directive)
 
     def __getitem__(self, name):
+        if str(name).strip() == '':
+            return self.identity_transform
         return self.transform_dict[name]
 
 
