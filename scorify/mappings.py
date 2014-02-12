@@ -70,11 +70,12 @@ class LinearMapping(Mapping):
                 input_domain[1], input_domain[0]))
 
     def transform(self, value):
+        val_float = float(value)
         in_range = self.input_domain[1] - self.input_domain[0]
         out_range = self.output_domain[1] - self.output_domain[0]
         in_first = self.input_domain[0]
         out_first = self.output_domain[0]
-        return (value - in_first) * (out_range/in_range) + out_first
+        return (val_float - in_first) * (out_range/in_range) + out_first
 
     @classmethod
     def from_string(kls, fx_string):

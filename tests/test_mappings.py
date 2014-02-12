@@ -29,6 +29,11 @@ def test_good_mappings():
         assert m.transform(inrange[1]) == outrange[1]
 
 
+def test_linear_mapping_strings():
+    m = LinearMapping((1,5), (2,6))
+    assert m.transform('1') == 2
+
+
 def test_mapping_fails_with_small_inrange():
     with pytest.raises(MappingError):
         m = LinearMapping((1,1), (2,3))
