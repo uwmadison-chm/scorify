@@ -41,12 +41,6 @@ def layout_section_no_skip():
     return ls
 
 
-def test_datafile_init():
-    df = datafile.Datafile(None, None)
-    assert df.header is None
-    assert df.data is None
-
-
 def test_read_populates_header_data(good_data, layout_section_with_skip):
     df = datafile.Datafile(good_data, layout_section_with_skip)
     df.read()

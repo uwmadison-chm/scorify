@@ -15,8 +15,8 @@ class Datafile(object):
     def __init__(self, lines, layout_section):
         self.lines = lines
         self.layout_section = layout_section
-        self.header = None
-        self.data = None
+        self.header = []
+        self.data = []
         super(Datafile, self).__init__()
 
     def read(self):
@@ -33,9 +33,11 @@ class Datafile(object):
             if line_type == 'header':
                 self.header = [h.strip() for h in line]
             else:
-                # Force lines of funny length to be the header's length
-                len_diff = len(self.header) - len(line)
-                padding = [''] * len_diff
-                full_line = line + padding
-                self.data.append(dict(zip(self.header, full_line)))
+                self.append_data(line)
 
+    def append_data(self, data):
+        # Force lines of funny length to be the header's length
+        len_diff = len(self.header) - len(data)
+        padding = [''] * len_diff
+        full_line = data + padding
+        self.data.append(dict(zip(self.header, full_line)))
