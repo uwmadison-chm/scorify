@@ -24,3 +24,11 @@ def test_transforming_works():
     assert tx.transform(1) == 1
     tx = directives.Transform('', 'map(1:5,2:6)')
     assert tx.transform(1) == 2
+
+
+def test_measure():
+    m = directives.Measure('foo', 'mean(c_foo)')
+    assert m.agg_fx
+    assert m.to_use == ['c_foo']
+    with pytest.raises(directives.DirectiveError):
+        directives.Measure('foo', 'bar')

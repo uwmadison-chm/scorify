@@ -2,7 +2,7 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
-import mappings
+import mappings, aggregators
 
 """
 Directives define operations we'll be performing on our input data files.
@@ -115,9 +115,16 @@ class Measure(object):
     measure MEASURE_1_MEAN mean(MEASURE_1)
     """
 
-    def __init__(self, name, agg_fx):
+    def __init__(self, name, aggregation_expr):
         self.name = name
-        self.agg_fx = agg_fx
+        self.aggregation_expr = aggregation_expr
+        try:
+            fname, fx, to_use = aggregators.parse_expr(aggregation_expr)
+            self.agg_fx = fx
+            self.to_use = to_use
+        except aggregators.AggregatorError as exc:
+            raise DirectiveError(exc.message)
+
         super(Measure, self).__init__()
 
 
