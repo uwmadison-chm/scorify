@@ -81,7 +81,7 @@ class LinearMapping(Mapping):
     def from_string(kls, fx_string):
         result = linear_mapping_re.match(fx_string)
         if result is None:
-            raise MappingError("I don't understand {0}".format(
+            raise MappingError("I don't understand {0!r}".format(
                 fx_string))
         params = result.groups()
         pn = [float(param) for param in params]
