@@ -29,6 +29,15 @@ def data_1():
     df.append_data(['b', '2', '3', '4', '1'])
     return df
 
+@pytest.fixture
+def measures_1():
+    ms = scoresheet.MeasureSection()
+    ms.append_from_strings(['happy', 'mean(happy)'])
+    return ms
+
+@pytest.fixture
+def scored_data_1(data_1, transforms, scores_1):
+    return scorer.Scorer.score(data_1, transforms, scores_1)
 
 def test_scorer_scores(data_1, transforms, scores_1):
     res = scorer.Scorer.score(data_1, transforms, scores_1)
@@ -36,3 +45,10 @@ def test_scorer_scores(data_1, transforms, scores_1):
     d = res.data[0]
     assert d['happy1: happy'] == '5'
     assert d['happy2: happy'] == 4
+
+
+def test_scorer_measures(scored_data_1, measures_1):
+    assert scored_data_1.header == ['happy1: happy', 'happy2: happy']
+    scorer.Scorer.add_measures(scored_data_1, measures_1)
+    assert scored_data_1.header == ['happy1: happy', 'happy2: happy', 'happy']
+    assert scored_data_1.data[0]['happy'] == 4.5
