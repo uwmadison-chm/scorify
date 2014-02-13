@@ -23,6 +23,15 @@ def scores_1():
     return ss
 
 @pytest.fixture
+def scores_2():
+    ss = scoresheet.ScoreSection()
+    ss.append_from_strings(['happy1', 'happy'])
+    ss.append_from_strings(['happy2', 'happy', '-'])
+    ss.append_from_strings(['sad1', 'sad'])
+    ss.append_from_strings(['sad2', 'sad', '-'])
+    return ss
+
+@pytest.fixture
 def data_1():
     df = datafile.Datafile(None, None)
     df.header = ['ppt', 'happy1', 'sad1', 'happy2', 'sad2']
@@ -48,9 +57,18 @@ def measures_1():
     return ms
 
 @pytest.fixture
+def measures_2():
+    ms = scoresheet.MeasureSection()
+    ms.append_from_strings(['affect', 'sum(happy, sad)'])
+    return ms
+
+@pytest.fixture
 def scored_data_1(data_1, transforms, scores_1):
     return scorer.Scorer.score(data_1, transforms, scores_1)
 
+@pytest.fixture
+def scored_data_2(data_1, transforms, scores_2):
+    return scorer.Scorer.score(data_1, transforms, scores_2)
 
 def test_scorer_scores(data_1, transforms, scores_1):
     res = scorer.Scorer.score(data_1, transforms, scores_1)
@@ -76,3 +94,8 @@ def test_scorer_measures(scored_data_1, measures_1):
 def test_scorer_assigns_nan_on_bad_measure(bad_scored, measures_1):
     scorer.Scorer.add_measures(bad_scored, measures_1)
     assert math.isnan(bad_scored.data[0]['happy'])
+
+def test_measures_multi_names(scored_data_2, measures_2):
+    scorer.Scorer.add_measures(scored_data_2, measures_2)
+    d = scored_data_2.data[0]
+    assert d['affect'] == 5+4+2+2
