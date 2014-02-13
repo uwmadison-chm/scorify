@@ -3,7 +3,7 @@
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
 from collections import defaultdict
-
+NAN = float('nan')
 
 class ScoredData(object):
     def __init__(self, header=None, data=None, measure_columns=None):
@@ -44,7 +44,10 @@ class Scorer(object):
             for s in score_section.directives:
                 tx = transform_section[s.transform]
                 name = kls.score_name(s)
-                sval = tx.transform(r[s.column])
+                try:
+                    sval = tx.transform(r[s.column])
+                except ValueError:
+                    sval = NAN
                 scored[name] = sval
             out.data.append(scored)
 
@@ -58,4 +61,7 @@ class Scorer(object):
             for m in measure_section.directives:
                 cols = scored_data.columns_for(m.to_use)
                 vals = [row[col] for col in cols]
-                row[m.name] = m.agg_fx(vals)
+                try:
+                    row[m.name] = m.agg_fx(vals)
+                except ValueError:
+                    row[m.name] = NAN

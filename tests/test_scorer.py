@@ -4,6 +4,7 @@
 
 import pytest
 
+import math
 from scorify import datafile, scoresheet, scorer
 
 
@@ -30,6 +31,17 @@ def data_1():
     return df
 
 @pytest.fixture
+def data_with_bad():
+    df = datafile.Datafile(None, None)
+    df.header = ['ppt', 'happy1', 'sad1', 'happy2', 'sad2']
+    df.append_data(['a', 'bad', '2', 'bad', '4'])
+    return df
+
+@pytest.fixture
+def bad_scored(data_with_bad, transforms, scores_1):
+    return scorer.Scorer.score(data_with_bad, transforms, scores_1)
+
+@pytest.fixture
 def measures_1():
     ms = scoresheet.MeasureSection()
     ms.append_from_strings(['happy', 'mean(happy)'])
@@ -39,6 +51,7 @@ def measures_1():
 def scored_data_1(data_1, transforms, scores_1):
     return scorer.Scorer.score(data_1, transforms, scores_1)
 
+
 def test_scorer_scores(data_1, transforms, scores_1):
     res = scorer.Scorer.score(data_1, transforms, scores_1)
     assert res.header == ['happy1: happy', 'happy2: happy']
@@ -47,8 +60,19 @@ def test_scorer_scores(data_1, transforms, scores_1):
     assert d['happy2: happy'] == 4
 
 
+def test_scorer_assigns_nan_on_bad_score(data_with_bad, transforms, scores_1):
+    res = scorer.Scorer.score(data_with_bad, transforms, scores_1)
+    d = res.data[0]
+    assert math.isnan(d['happy2: happy'])
+
+
 def test_scorer_measures(scored_data_1, measures_1):
     assert scored_data_1.header == ['happy1: happy', 'happy2: happy']
     scorer.Scorer.add_measures(scored_data_1, measures_1)
     assert scored_data_1.header == ['happy1: happy', 'happy2: happy', 'happy']
     assert scored_data_1.data[0]['happy'] == 4.5
+
+
+def test_scorer_assigns_nan_on_bad_measure(bad_scored, measures_1):
+    scorer.Scorer.add_measures(bad_scored, measures_1)
+    assert math.isnan(bad_scored.data[0]['happy'])
