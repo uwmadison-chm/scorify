@@ -116,13 +116,6 @@ def test_score_section_dupes():
     assert len(s.directives) == 3
 
 
-def test_score_section_measure_columns():
-    s = scoresheet.ScoreSection()
-    s.append_directive(directives.Score("col", "measure"))
-    s.append_directive(directives.Score("col2", "measure"))
-    assert s.measure_columns['measure'] == ['col', 'col2']
-
-
 def test_measure_section_dupes():
     s = scoresheet.MeasureSection()
     d = directives.Measure('foo', 'mean(bar)')

@@ -168,7 +168,6 @@ class TransformSection(Section):
 
 class ScoreSection(Section):
     def __init__(self, directives=None):
-        self.measure_columns = defaultdict(list)
         super(ScoreSection, self).__init__(directives)
 
     def append_from_strings(self, string_list):
@@ -194,7 +193,6 @@ class ScoreSection(Section):
         if len(dupes) > 0:
             raise SectionError("{0} is already part of {1}".format(
                 column, measure_name))
-        self.measure_columns[measure_name].append(column)
         super(ScoreSection, self).append_directive(directive)
 
 
