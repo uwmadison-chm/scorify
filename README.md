@@ -36,3 +36,8 @@ PPT_COL | HAPPY_Q1 (HAPPY) | SAD_Q1 (SAD) | HAPPY_Q2 (HAPPY) | HAPPY_SCORE | SAD
 --------|------------------|--------------|------------------|-------------|----------
 ppt1 | 4 | 2 | 3 | 3.5 | 2
 ppt2 | 2 | 5 | 1 | 1.5 | 5
+
+
+## Credits
+
+TODO properly credit docopt, schema
