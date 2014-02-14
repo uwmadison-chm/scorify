@@ -41,3 +41,21 @@ class Datafile(object):
         padding = [''] * len_diff
         full_line = data + padding
         self.data.append(dict(zip(self.header, full_line)))
+
+    def apply_exclusions(self, exclusion_section):
+        new_data = []
+        for row in self.data:
+            exclude = any([e.excludes(row) for e in exclusion_section])
+            if not exclude:
+                new_data.append(row)
+        self.data = new_data
+
+
+    def __len__(self):
+        return len(self.data)
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __getitem__(self, item):
+        return self.data[item]

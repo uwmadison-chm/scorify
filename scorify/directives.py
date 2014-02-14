@@ -60,8 +60,11 @@ class Exclude(object):
 
     def __init__(self, column, value):
         self.column = column
-        self.value = value
+        self.value = value.strip()
         super(Exclude, self).__init__()
+
+    def excludes(self, row):
+        return str(row[self.column]).strip() == self.value
 
 
 class Transform(object):

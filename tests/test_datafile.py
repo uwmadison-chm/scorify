@@ -12,7 +12,9 @@ def good_data():
     return [
         ['ppt','happy1','happy2','sad1','sad2','extra'],
         ['skip','skip','skip','skip','skip','skip'],
-        ['a','5','2','1','4','3']
+        ['a','5','2','1','4','3'],
+        ['b','5','2','1','4','3'],
+        ['c','5','2','1','4','3']
     ]
 
 @pytest.fixture
@@ -41,6 +43,13 @@ def layout_section_no_skip():
     return ls
 
 
+@pytest.fixture
+def exclude_section():
+    es = scoresheet.ExcludeSection()
+    es.append_from_strings(['ppt', 'a'])
+    return es
+
+
 def test_read_populates_header_data(good_data, layout_section_with_skip):
     df = datafile.Datafile(good_data, layout_section_with_skip)
     df.read()
@@ -54,3 +63,13 @@ def test_read_handles_odd_lengths(
     df.read()
     assert len(df.data[0].values()) == len(df.header)
     assert len(df.data[1].values()) == len(df.header)
+
+
+def test_apply_exclusions(
+        good_data, layout_section_with_skip, exclude_section):
+    df = datafile.Datafile(good_data, layout_section_with_skip)
+    df.read()
+    assert len(df) == 3
+    df.apply_exclusions(exclude_section)
+    assert len(df) == 2
+    assert df[0]['ppt'] == 'b'
