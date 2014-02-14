@@ -17,6 +17,12 @@ class ScoredData(object):
             out.extend(self.measure_columns[name])
         return out
 
+    def __len__(self):
+        return len(self.data)
+
+    def __iter__(self):
+        return iter(self.data)
+
 
 class Scorer(object):
     @classmethod
