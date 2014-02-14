@@ -89,6 +89,9 @@ class Section(object):
     def __len__(self):
         return len(self.directives)
 
+    def __getitem__(self, item):
+        return self.directives[item]
+
 
 class LayoutSection(Section):
     def __init__(self, directives=None):
