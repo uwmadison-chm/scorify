@@ -33,5 +33,9 @@ setup(
     license=metadata['license'],
     url=metadata['url'],
     packages=find_packages(),
-    cmdclass = {'test': PyTest}
+    cmdclass={'test': PyTest},
+    entry_points={
+        'console_scripts': [
+            'score_data = scorify.scripts.score_data:main'
+        ]}
     )

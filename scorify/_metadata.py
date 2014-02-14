@@ -1,5 +1,5 @@
 # coding: utf8
-version = "0.1dev"
+version = "0.1"
 author = "Nathan Vack"
 author_email = "njvack@wisc.edu"
 license = "MIT"
