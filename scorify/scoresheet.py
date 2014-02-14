@@ -83,6 +83,9 @@ class Section(object):
     def append_directive(self, directive):
         self.directives.append(directive)
 
+    def __iter__(self):
+        return iter(self.directives)
+
     def __len__(self):
         return len(self.directives)
 

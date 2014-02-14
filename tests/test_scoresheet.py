@@ -44,6 +44,16 @@ def test_successful_read(good_sample_csv):
     assert len(ss.measure_section) == 2
 
 
+def test_section_iterates():
+    skip = directives.Layout('skip')
+    header = directives.Layout('header')
+    data = directives.Layout('data')
+
+    ls = scoresheet.LayoutSection([header,skip,data])
+    for directive in ls:
+        assert directive
+
+
 def test_layout_section():
     skip = directives.Layout('skip')
     header = directives.Layout('header')
