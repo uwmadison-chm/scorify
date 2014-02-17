@@ -6,8 +6,8 @@
 """Score questionnaire responses.
 
 Usage:
-  scorify [options] <scoresheet> <datafile>
-  scorify -h | --help
+  score_data [options] <scoresheet> <datafile>
+  score_data -h | --help
 
 Options:
   -h --help            Show this screen
