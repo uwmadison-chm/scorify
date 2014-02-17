@@ -68,6 +68,7 @@ ppt2 | 2 | 5 | 1 | 1.5 | 5
 Scorify packages two excellent libraries: [docopt](https://github.com/docopt/docopt) and [schema](https://github.com/halst/schema).
 
 docopt is copyright (c) 2013 Vladimir Keleshev, vladimir@keleshev.com
+
 schema is copyright (c) 2012 Vladimir Keleshev, vladimir@keleshev.com
 
 Hey, look at that! Same guy.
