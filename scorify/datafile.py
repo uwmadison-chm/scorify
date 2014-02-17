@@ -50,6 +50,9 @@ class Datafile(object):
                 new_data.append(row)
         self.data = new_data
 
+    def missing_column_message(self, column):
+        return "Can't find column {0}\nKnown columns: {1}".format(
+            column, ", ".join(self.header))
 
     def __len__(self):
         return len(self.data)
