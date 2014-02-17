@@ -2,9 +2,10 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 
 import directives
+import mappings
 
 class Scoresheet(object):
     def __init__(self):
@@ -15,11 +16,11 @@ class Scoresheet(object):
         self.score_section = ScoreSection()
         self.measure_section = MeasureSection()
 
-    def add_error(self, line_number, message):
-        self.errors.append(ScoresheetMessage(line_number, message))
+    def add_error(self, message):
+        self.errors.append(message)
 
-
-ScoresheetMessage = namedtuple('ScoresheetMessage', ['line', 'message'])
+    def has_errors(self):
+        return len(self.errors) > 0
 
 
 class Reader(object):
@@ -29,6 +30,15 @@ class Reader(object):
         iterable, return a list per iteration, and support line_number.
         """
         self.data = data
+
+    def ignorable_line(self, stripped_parts):
+        content_parts = [p for p in stripped_parts if len(p) > 0]
+        is_comment = False
+        try:
+            is_comment = stripped_parts[0][0] == "#"
+        except IndexError:
+            pass # Obvs not a comment
+        return len(content_parts) < 2 or is_comment
 
     def read_into_scoresheet(self, sheet=None):
         if sheet == None:
@@ -44,10 +54,9 @@ class Reader(object):
         exclusion_lines = []
 
         for line in self.data:
-            ignore_line = (len(line) < 2) or (line[0] == "#")
-            if ignore_line:
-                continue
             stripped_parts = [str(p).strip() for p in line]
+            if self.ignorable_line(stripped_parts):
+                continue
             line_type = stripped_parts[0]
             line_params = stripped_parts[1:]
             try:
@@ -55,13 +64,17 @@ class Reader(object):
                 sect.append_from_strings(line_params)
             except KeyError:
                 sheet.add_error(
-                    self.data.line_num,
-                    "I don't understand {0}".format(line_type))
+                    "Line {0}: I don't understand {1}".format(
+                        self.data.line_num,line_type))
             except (
                 SectionError,
                 directives.DirectiveError,
                 mappings.MappingError) as exc:
-                sheet.add_error(self.data.line_num, exc.message)
+                sheet.add_error("Line {0}: {1}".format(
+                    self.data.line_num, exc.message))
+        if not sheet.layout_section.is_valid():
+            for err in sheet.layout_section.errors:
+                sheet.add_error(err)
         return sheet
 
 
@@ -101,19 +114,19 @@ class LayoutSection(Section):
         self.errors = []
         headers = [d for d in self.directives if d.info == 'header']
         if len(headers) > 1:
-            self.errors.append('you can only have one header in your layout')
+            self.errors.append('You can only have one header in your layout')
         if len(headers) < 1:
-            self.errors.append('you must have one header in your layout')
+            self.errors.append('You must have one header in your layout')
 
         datas = [d for d in self.directives if d.info == 'data']
         if len(datas) > 1:
-            self.errors.append('you can only have one data in your layout')
+            self.errors.append('You can only have one data in your layout')
         if len(datas) < 1:
-            self.errors.append('you must have one data in your layout')
+            self.errors.append('You must have one data in your layout')
 
         last_entry = self.directives[-1]
         if not last_entry.info == 'data':
-            self.errors.append("data needs to come last in your layout")
+            self.errors.append("Data needs to come last in your layout")
 
         return len(self.errors) == 0
 
@@ -165,6 +178,9 @@ class TransformSection(Section):
                 "there's already a transform called {0}".format(name))
         self.transform_dict[name] = directive
         super(TransformSection, self).append_directive(directive)
+
+    def known_transforms(self):
+        return self.transform_dict.keys()
 
     def __getitem__(self, name):
         if str(name).strip() == '':

@@ -99,7 +99,7 @@ def test_scorer_measures(scored_data_1, measures_1):
 
 
 def test_measures_fail_with_bad_name(scored_data_1, measures_bad):
-    with pytest.raises(KeyError):
+    with pytest.raises(scorer.AggregationError):
         scorer.Scorer.add_measures(scored_data_1, measures_bad)
 
 

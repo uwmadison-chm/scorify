@@ -10,6 +10,7 @@ in a scoresheet.LayoutSection, which tells you where data and header sections
 are.
 """
 
+from scorify.errors import HaystackError
 
 class Datafile(object):
     def __init__(self, lines, layout_section):
@@ -45,14 +46,14 @@ class Datafile(object):
     def apply_exclusions(self, exclusion_section):
         new_data = []
         for row in self.data:
-            exclude = any([e.excludes(row) for e in exclusion_section])
+            try:
+                exclude = any([e.excludes(row) for e in exclusion_section])
+            except KeyError as exc:
+                raise ExclusionError("data columns", exc.message,
+                    self.data.header)
             if not exclude:
                 new_data.append(row)
         self.data = new_data
-
-    def missing_column_message(self, column):
-        return "Can't find column {0}\nKnown columns: {1}".format(
-            column, ", ".join(self.header))
 
     def __len__(self):
         return len(self.data)
@@ -62,3 +63,7 @@ class Datafile(object):
 
     def __getitem__(self, item):
         return self.data[item]
+
+
+class ExclusionError(HaystackError):
+    pass

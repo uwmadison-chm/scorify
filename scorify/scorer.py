@@ -3,6 +3,8 @@
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
 from collections import defaultdict
+from scorify.errors import HaystackError
+
 NAN = float('nan')
 
 class ScoredData(object):
@@ -18,6 +20,9 @@ class ScoredData(object):
                 raise KeyError(name)
             out.extend(self.measure_columns[name])
         return out
+
+    def known_measures(self):
+        return [m for m in self.measure_columns.keys() if len(m.strip()) > 0]
 
     def __len__(self):
         return len(self.data)
@@ -50,10 +55,19 @@ class Scorer(object):
         for r in datafile.data:
             scored = {}
             for s in score_section.directives:
-                tx = transform_section[s.transform]
+                try:
+                    tx = transform_section[s.transform]
+                except KeyError as exc:
+                    raise TransformError(
+                        "transforms", exc.message,
+                        transform_section.known_transforms())
+
                 name = kls.score_name(s)
                 try:
                     sval = tx.transform(r[s.column])
+                except KeyError as err:
+                    raise ScoringError("data columns", err.message,
+                        datafile.header)
                 except ValueError:
                     sval = NAN
                 scored[name] = sval
@@ -67,9 +81,25 @@ class Scorer(object):
             scored_data.header.append(m.name)
         for row in scored_data.data:
             for m in measure_section.directives:
-                cols = scored_data.columns_for(m.to_use)
+                try:
+                    cols = scored_data.columns_for(m.to_use)
+                except KeyError as exc:
+                    raise AggregationError(
+                        "measures", exc.message, scored_data.known_measures())
                 vals = [row[col] for col in cols]
                 try:
                     row[m.name] = m.agg_fx(vals)
                 except ValueError:
                     row[m.name] = NAN
+
+
+class TransformError(HaystackError):
+    pass
+
+
+class ScoringError(HaystackError):
+    pass
+
+
+class AggregationError(HaystackError):
+    pass
