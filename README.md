@@ -57,7 +57,7 @@ What you'll do is create a tab- or comma-separated "scoresheet" that looks like:
 
 When run on data that contains PPT_COL, HAPPY_Q1, SAD_Q1, and HAPPY_Q2 columns, the output will be:
 
-PPT_COL | HAPPY_Q1 (happy) | SAD_Q1 (sad) | HAPPY_Q2 (happy) | happy_score | sad_score
+PPT_COL | HAPPY_Q1: happy | SAD_Q1: sad | HAPPY_Q2: happy | happy_score | sad_score
 --------|------------------|--------------|------------------|-------------|----------
 ppt1 | 4 | 2 | 3 | 3.5 | 2
 ppt2 | 2 | 5 | 1 | 1.5 | 5
@@ -68,6 +68,7 @@ ppt2 | 2 | 5 | 1 | 1.5 | 5
 Scorify packages two excellent libraries: [docopt](https://github.com/docopt/docopt) and [schema](https://github.com/halst/schema).
 
 docopt is copyright (c) 2013 Vladimir Keleshev, vladimir@keleshev.com
+
 schema is copyright (c) 2012 Vladimir Keleshev, vladimir@keleshev.com
 
 Hey, look at that! Same guy.
