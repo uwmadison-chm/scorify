@@ -1,4 +1,4 @@
-# coding: utf8
+# -*- coding: utf-8 -*-
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
