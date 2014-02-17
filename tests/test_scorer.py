@@ -63,12 +63,19 @@ def measures_2():
     return ms
 
 @pytest.fixture
+def measures_bad():
+    ms = scoresheet.MeasureSection()
+    ms.append_from_strings(['happy', 'sum(badness)'])
+    return ms
+
+@pytest.fixture
 def scored_data_1(data_1, transforms, scores_1):
     return scorer.Scorer.score(data_1, transforms, scores_1)
 
 @pytest.fixture
 def scored_data_2(data_1, transforms, scores_2):
     return scorer.Scorer.score(data_1, transforms, scores_2)
+
 
 def test_scorer_scores(data_1, transforms, scores_1):
     res = scorer.Scorer.score(data_1, transforms, scores_1)
@@ -91,9 +98,15 @@ def test_scorer_measures(scored_data_1, measures_1):
     assert scored_data_1.data[0]['happy'] == 4.5
 
 
+def test_measures_fail_with_bad_name(scored_data_1, measures_bad):
+    with pytest.raises(KeyError):
+        scorer.Scorer.add_measures(scored_data_1, measures_bad)
+
+
 def test_scorer_assigns_nan_on_bad_measure(bad_scored, measures_1):
     scorer.Scorer.add_measures(bad_scored, measures_1)
     assert math.isnan(bad_scored.data[0]['happy'])
+
 
 def test_measures_multi_names(scored_data_2, measures_2):
     scorer.Scorer.add_measures(scored_data_2, measures_2)

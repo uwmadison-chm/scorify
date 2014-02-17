@@ -14,6 +14,8 @@ class ScoredData(object):
     def columns_for(self, measure_list):
         out = []
         for name in measure_list:
+            if name not in self.measure_columns:
+                raise KeyError(name)
             out.extend(self.measure_columns[name])
         return out
 
