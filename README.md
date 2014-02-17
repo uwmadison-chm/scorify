@@ -57,7 +57,7 @@ What you'll do is create a tab- or comma-separated "scoresheet" that looks like:
 
 When run on data that contains PPT_COL, HAPPY_Q1, SAD_Q1, and HAPPY_Q2 columns, the output will be:
 
-PPT_COL | HAPPY_Q1 (happy) | SAD_Q1 (sad) | HAPPY_Q2 (happy) | happy_score | sad_score
+PPT_COL | HAPPY_Q1: happy | SAD_Q1: sad | HAPPY_Q2: happy | happy_score | sad_score
 --------|------------------|--------------|------------------|-------------|----------
 ppt1 | 4 | 2 | 3 | 3.5 | 2
 ppt2 | 2 | 5 | 1 | 1.5 | 5
