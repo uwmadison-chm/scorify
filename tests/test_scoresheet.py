@@ -22,11 +22,13 @@ exclude,ppt,9999
 
 transform,normal,"map(1:5,1:5)"
 transform,reverse,"map(1:5,5:1)"
+transform,gender,discrete_map("1": "f", "2": "m")
 
 score,happy1, happy,normal
 score,sad1,sad,reverse
 score,happy2,happy,reverse
 score,sad2,sad,normal
+score,gender,gender,gender
 
 measure,mean_happy,mean(happy)
 measure,mean_sad,mean(sad)
@@ -39,8 +41,8 @@ def test_successful_read(good_sample_csv):
     assert type(ss) == scoresheet.Scoresheet
     assert ss.errors == []
     assert len(ss.layout_section) == 3
-    assert len(ss.transform_section) == 2
-    assert len(ss.score_section) == 4
+    assert len(ss.transform_section) == 3
+    assert len(ss.score_section) == 5
     assert len(ss.measure_section) == 2
 
 

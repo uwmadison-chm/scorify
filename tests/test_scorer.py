@@ -12,6 +12,7 @@ from scorify import datafile, scoresheet, scorer
 def transforms():
     ts = scoresheet.TransformSection()
     ts.append_from_strings(['-', 'map(1:5,5:1)'])
+    ts.append_from_strings(['gmap', 'discrete_map("1": "f", "2": "m")'])
     return ts
 
 
@@ -31,12 +32,19 @@ def scores_2():
     ss.append_from_strings(['sad2', 'sad', '-'])
     return ss
 
+
+@pytest.fixture
+def gender_score():
+    ss = scoresheet.ScoreSection()
+    ss.append_from_strings(['gender1', 'gender', 'gmap'])
+    return ss
+
 @pytest.fixture
 def data_1():
     df = datafile.Datafile(None, None)
-    df.header = ['ppt', 'happy1', 'sad1', 'happy2', 'sad2']
-    df.append_data(['a', '5', '2', '2', '4'])
-    df.append_data(['b', '2', '3', '4', '1'])
+    df.header = ['ppt', 'happy1', 'sad1', 'happy2', 'sad2', 'gender1']
+    df.append_data(['a', '5', '2', '2', '4', '1'])
+    df.append_data(['b', '2', '3', '4', '1', '3'])
     return df
 
 @pytest.fixture
@@ -106,6 +114,13 @@ def test_measures_fail_with_bad_name(scored_data_1, measures_bad):
 def test_scorer_assigns_nan_on_bad_measure(bad_scored, measures_1):
     scorer.Scorer.add_measures(bad_scored, measures_1)
     assert math.isnan(bad_scored.data[0]['happy'])
+
+
+def test_scorer_does_discrete_mappings(data_1, transforms, gender_score):
+    res = scorer.Scorer.score(data_1, transforms, gender_score)
+
+    assert res.data[0]['gender1: gender'] == 'f'
+    assert res.data[1]['gender1: gender'] == ''
 
 
 def test_measures_multi_names(scored_data_2, measures_2):

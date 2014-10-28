@@ -7,7 +7,9 @@ from __future__ import with_statement
 import pytest
 
 from scorify import mappings
-from scorify.mappings import Mapping, Identity, LinearMapping, MappingError
+from scorify.mappings import (
+    Mapping, Identity, LinearMapping, DiscreteMapping, MappingError)
+
 
 def test_identity():
     i = Identity()
@@ -57,7 +59,25 @@ def test_linear_mapping_from_string():
         LinearMapping.from_string("map(a:b,3:4)")
 
 
+def test_discrete_mapping_from_string():
+    m = DiscreteMapping.from_string('string_map("1":"f","2":"m")')
+    assert m.map_dict == {"1": "f", "2": "m"}
+    # And let's get trickier
+    m = DiscreteMapping.from_string(
+        r'string_map("1\"": "f" , "2" :"m")')
+    assert m.map_dict == {r'1"': "f", "2": "m"}
+
+
+def test_discrete_mapping_transform():
+    m = DiscreteMapping({"1": "f", "2": "m"})
+    assert m.transform("1") == "f"
+    assert m.transform("2") == "m"
+    assert m.transform("3") == ""
+
+
 def test_mapping_types():
     assert type(Mapping.from_string('')) == Identity
     assert type(Mapping.from_string('i')) == Identity
     assert type(Mapping.from_string('map(1:3,2:4)')) == LinearMapping
+    assert type(
+        Mapping.from_string('discrete_map("a":"b")')) == DiscreteMapping

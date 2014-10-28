@@ -12,7 +12,8 @@ files.
 The two functions are:
 
 Identity: (doesn't change anything)
-LinearMapping: Change a variable from one domain to another (eg, from 1:5 to 5:1)
+LinearMapping: Change a variable from one domain to
+another (eg, from 1:5 to 5:1)
 """
 
 
@@ -30,6 +31,8 @@ class Mapping(object):
             return Identity()
         if fx_string.find("map(") == 0:
             return LinearMapping.from_string(fx_string)
+        if fx_string.find("discrete_map(") == 0:
+            return DiscreteMapping.from_string(fx_string)
 
 
 class Identity(Mapping):
@@ -87,10 +90,43 @@ class LinearMapping(Mapping):
         pn = [float(param) for param in params]
         return LinearMapping((pn[0], pn[1]), (pn[2], pn[3]))
 
-
     def __repr__(self):
         return "LinearMapping({0}, {1})".format(
             self.input_domain, self.output_domain)
+
+# Example: string_map("1":"f", "2":"m")
+# We'll use this as an iterator to get all the "1":"f" maps
+discrete_mapping_re = re.compile(r"""
+    "((?:[^"\\]|\\.)*)"
+    \s*:\s*
+    "((?:[^"\\]|\\.)*)"
+""", re.VERBOSE)
+
+
+class DiscreteMapping(Mapping):
+
+    def __init__(self, map_dict):
+        super(DiscreteMapping, self).__init__()
+        self.map_dict = map_dict
+
+    def transform(self, value):
+        if value in self.map_dict:
+            return self.map_dict[value]
+        # In the case where there's no match, it's probably best to return an
+        # empty string. They'll always see the original value in the output
+        # anyhow.
+        return ''
+
+    @classmethod
+    def from_string(kls, fx_string):
+        def ues(s):
+            # Unescapes strings -- will turn '\"' into '"'
+            return bytes(s).decode('unicode-escape')
+        # Python 2.7 has a sweet dict comprehension, but I'll keep 2.5 compat
+        result = dict((
+            (ues(match.group(1)), ues(match.group(2)))
+            for match in re.finditer(discrete_mapping_re, fx_string)))
+        return kls(result)
 
 
 class MappingError(ValueError):
