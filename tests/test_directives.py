@@ -11,7 +11,7 @@ from scorify import directives
 
 def test_layout_accepts_header_skip_data():
     with pytest.raises(directives.DirectiveError):
-        l = directives.Layout('foo')
+        directives.Layout('foo')
     assert directives.Layout('header')
     assert directives.Layout('data')
     assert directives.Layout('skip')

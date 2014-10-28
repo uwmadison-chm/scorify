@@ -6,7 +6,6 @@ from __future__ import with_statement
 
 import pytest
 
-from scorify import mappings
 from scorify.mappings import (
     Mapping, Identity, LinearMapping, DiscreteMapping, MappingError)
 
@@ -20,10 +19,10 @@ def test_identity():
 
 def test_good_mappings():
     sets = [
-        ((1,5), (1,5)),
-        ((1,5), (5,1)),
-        ((1,5), (2,6)),
-        ((1,5), (0, 10))
+        ((1, 5), (1, 5)),
+        ((1, 5), (5, 1)),
+        ((1, 5), (2, 6)),
+        ((1, 5), (0, 10))
     ]
     for inrange, outrange in sets:
         m = LinearMapping(inrange, outrange)
@@ -32,27 +31,27 @@ def test_good_mappings():
 
 
 def test_linear_mapping_strings():
-    m = LinearMapping((1,5), (2,6))
+    m = LinearMapping((1, 5), (2, 6))
     assert m.transform('1') == 2
 
 
 def test_mapping_fails_with_small_inrange():
     with pytest.raises(MappingError):
-        m = LinearMapping((1,1), (2,3))
+        LinearMapping((1, 1), (2, 3))
 
 
 def test_mapping_fails_with_letter_ranges():
     with pytest.raises(MappingError):
-        m = LinearMapping(('a', 1), (1,5))
+        LinearMapping(('a', 1), (1, 5))
 
     with pytest.raises(MappingError):
-        m = LinearMapping((1,5), ('a', 1))
+        LinearMapping((1, 5), ('a', 1))
 
 
 def test_linear_mapping_from_string():
     m = LinearMapping.from_string("map( -1:3,2.5: 4)")
-    assert m.input_domain == (-1.0,3.0)
-    assert m.output_domain == (2.5,4.0)
+    assert m.input_domain == (-1.0, 3.0)
+    assert m.output_domain == (2.5, 4.0)
     with pytest.raises(MappingError):
         LinearMapping.from_string("braboz")
     with pytest.raises(MappingError):

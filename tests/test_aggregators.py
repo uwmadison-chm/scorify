@@ -26,15 +26,15 @@ def test_bad_parses():
 
 
 def test_sum_with_nums():
-    ar = [1,2,3]
+    ar = [1, 2, 3]
     assert aggregators.ag_sum(ar) == 6
 
 
 def test_sum_with_strings():
-    ar = ['1','2','3']
+    ar = ['1', '2', '3']
     assert aggregators.ag_sum(ar) == 6
 
 
 def test_mean():
-    ar = [1,2,3]
+    ar = [1, 2, 3]
     assert aggregators.ag_mean(ar) == 2

@@ -10,18 +10,19 @@ from scorify import datafile, scoresheet
 @pytest.fixture
 def good_data():
     return [
-        ['ppt','happy1','happy2','sad1','sad2','extra'],
-        ['skip','skip','skip','skip','skip','skip'],
-        ['a','5','2','1','4','3'],
-        ['b','5','2','1','4','3'],
-        ['c','5','2','1','4','3']
+        ['ppt', 'happy1', 'happy2', 'sad1', 'sad2', 'extra'],
+        ['skip', 'skip', 'skip', 'skip', 'skip', 'skip'],
+        ['a', '5', '2', '1', '4', '3'],
+        ['b', '5', '2', '1', '4', '3'],
+        ['c', '5', '2', '1', '4', '3']
     ]
+
 
 @pytest.fixture
 def data_with_funny_lengths():
     return [
         ['a', 'b'],
-        [1,2,3],
+        [1, 2, 3],
         [4]
     ]
 

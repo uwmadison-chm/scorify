@@ -51,7 +51,7 @@ def test_section_iterates():
     header = directives.Layout('header')
     data = directives.Layout('data')
 
-    ls = scoresheet.LayoutSection([header,skip,data])
+    ls = scoresheet.LayoutSection([header, skip, data])
     for directive in ls:
         assert directive
 
@@ -61,13 +61,13 @@ def test_layout_section():
     header = directives.Layout('header')
     data = directives.Layout('data')
 
-    ls = scoresheet.LayoutSection([header,data])
+    ls = scoresheet.LayoutSection([header, data])
     assert ls.is_valid()
 
-    ls = scoresheet.LayoutSection([header,skip,data])
+    ls = scoresheet.LayoutSection([header, skip, data])
     assert ls.is_valid()
 
-    ls = scoresheet.LayoutSection([header,header,data])
+    ls = scoresheet.LayoutSection([header, header, data])
     assert not ls.is_valid()
 
     ls = scoresheet.LayoutSection([header])
@@ -76,13 +76,13 @@ def test_layout_section():
     ls = scoresheet.LayoutSection([data])
     assert not ls.is_valid()
 
-    ls = scoresheet.LayoutSection([header,data,data])
+    ls = scoresheet.LayoutSection([header, data, data])
     assert not ls.is_valid()
 
-    ls = scoresheet.LayoutSection([header,data,skip])
+    ls = scoresheet.LayoutSection([header, data, skip])
     assert not ls.is_valid()
 
-    ls = scoresheet.LayoutSection([data,header])
+    ls = scoresheet.LayoutSection([data, header])
     assert not ls.is_valid()
 
 

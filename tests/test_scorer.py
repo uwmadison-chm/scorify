@@ -23,6 +23,7 @@ def scores_1():
     ss.append_from_strings(['happy2', 'happy', '-'])
     return ss
 
+
 @pytest.fixture
 def scores_2():
     ss = scoresheet.ScoreSection()
@@ -39,6 +40,7 @@ def gender_score():
     ss.append_from_strings(['gender1', 'gender', 'gmap'])
     return ss
 
+
 @pytest.fixture
 def data_1():
     df = datafile.Datafile(None, None)
@@ -47,6 +49,7 @@ def data_1():
     df.append_data(['b', '2', '3', '4', '1', '3'])
     return df
 
+
 @pytest.fixture
 def data_with_bad():
     df = datafile.Datafile(None, None)
@@ -54,9 +57,11 @@ def data_with_bad():
     df.append_data(['a', 'bad', '2', 'bad', '4'])
     return df
 
+
 @pytest.fixture
 def bad_scored(data_with_bad, transforms, scores_1):
     return scorer.Scorer.score(data_with_bad, transforms, scores_1)
+
 
 @pytest.fixture
 def measures_1():
@@ -64,11 +69,13 @@ def measures_1():
     ms.append_from_strings(['happy', 'mean(happy)'])
     return ms
 
+
 @pytest.fixture
 def measures_2():
     ms = scoresheet.MeasureSection()
     ms.append_from_strings(['affect', 'sum(happy, sad)'])
     return ms
+
 
 @pytest.fixture
 def measures_bad():
@@ -76,9 +83,11 @@ def measures_bad():
     ms.append_from_strings(['happy', 'sum(badness)'])
     return ms
 
+
 @pytest.fixture
 def scored_data_1(data_1, transforms, scores_1):
     return scorer.Scorer.score(data_1, transforms, scores_1)
+
 
 @pytest.fixture
 def scored_data_2(data_1, transforms, scores_2):
@@ -126,4 +135,4 @@ def test_scorer_does_discrete_mappings(data_1, transforms, gender_score):
 def test_measures_multi_names(scored_data_2, measures_2):
     scorer.Scorer.add_measures(scored_data_2, measures_2)
     d = scored_data_2.data[0]
-    assert d['affect'] == 5+4+2+2
+    assert d['affect'] == 5 + 4 + 2 + 2

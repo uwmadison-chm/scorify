@@ -2,9 +2,8 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
-import pytest
-
 from scorify import utils
+
 
 def test_float_pp():
     assert utils.float_pp(1.0) == "1"
