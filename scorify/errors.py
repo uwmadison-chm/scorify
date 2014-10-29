@@ -5,6 +5,8 @@
 """
 A set of exceptions for scorify.
 """
+
+
 class HaystackError(KeyError):
     def __init__(self, haystack_name, needle, haystack):
         msg = "Can't find {0} in {1}.\nPossible values: {2}".format(

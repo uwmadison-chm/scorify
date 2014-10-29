@@ -2,10 +2,9 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
-from collections import defaultdict
-
 import directives
 import mappings
+
 
 class Scoresheet(object):
     def __init__(self):
@@ -37,21 +36,19 @@ class Reader(object):
         try:
             is_comment = stripped_parts[0][0] == "#"
         except IndexError:
-            pass # Obvs not a comment
+            pass  # Obvs not a comment
         return len(content_parts) < 2 or is_comment
 
     def read_into_scoresheet(self, sheet=None):
-        if sheet == None:
+        if sheet is None:
             sheet = Scoresheet()
         section_map = {
             'layout': sheet.layout_section,
-            'exclude' : sheet.exclude_section,
+            'exclude': sheet.exclude_section,
             'transform': sheet.transform_section,
             'score': sheet.score_section,
             'measure': sheet.measure_section
         }
-        layout_lines = []
-        exclusion_lines = []
 
         for line in self.data:
             stripped_parts = [str(p).strip() for p in line]
@@ -65,11 +62,12 @@ class Reader(object):
             except KeyError:
                 sheet.add_error(
                     "Line {0}: I don't understand {1}".format(
-                        self.data.line_num,line_type))
+                        self.data.line_num, line_type))
             except (
                 SectionError,
                 directives.DirectiveError,
-                mappings.MappingError) as exc:
+                mappings.MappingError
+            ) as exc:
                 sheet.add_error("Line {0}: {1}".format(
                     self.data.line_num, exc.message))
         if not sheet.layout_section.is_valid():
@@ -210,7 +208,8 @@ class ScoreSection(Section):
     def append_directive(self, directive):
         column = directive.column
         measure_name = directive.measure_name
-        dupes = [d for d in self.directives if
+        dupes = [
+            d for d in self.directives if
             d.column == column and d.measure_name == measure_name]
         if len(dupes) > 0:
             raise SectionError("{0} is already part of {1}".format(

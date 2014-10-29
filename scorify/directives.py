@@ -2,7 +2,8 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
-import mappings, aggregators
+import mappings
+import aggregators
 
 """
 Directives define operations we'll be performing on our input data files.
@@ -19,6 +20,7 @@ score: A column, a classification for the column, and the transform to run
 
 measure: How to aggregate scored columns into directly-usable measurements
 """
+
 
 class Layout(object):
     """
@@ -42,8 +44,9 @@ class Layout(object):
 
     def __init__(self, info):
         info_lower = info.strip().lower()
-        if not info_lower in set(['header', 'data', 'skip']):
-            raise DirectiveError("Didn't understand layout {0!r}".format(info))
+        if info_lower not in set(['header', 'data', 'skip']):
+            raise DirectiveError(
+                "Didn't understand layout {0!r}".format(info))
 
         self.info = info_lower
         super(Layout, self).__init__()

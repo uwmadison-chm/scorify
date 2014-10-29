@@ -12,6 +12,7 @@ are.
 
 from scorify.errors import HaystackError
 
+
 class Datafile(object):
     def __init__(self, lines, layout_section):
         self.lines = lines
@@ -49,8 +50,8 @@ class Datafile(object):
             try:
                 exclude = any([e.excludes(row) for e in exclusion_section])
             except KeyError as exc:
-                raise ExclusionError("data columns", exc.message,
-                    self.data.header)
+                raise ExclusionError(
+                    "data columns", exc.message, self.data.header)
             if not exclude:
                 new_data.append(row)
         self.data = new_data

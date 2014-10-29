@@ -7,6 +7,7 @@ from scorify.errors import HaystackError
 
 NAN = float('nan')
 
+
 class ScoredData(object):
     def __init__(self, header=None, data=None, measure_columns=None):
         self.header = header or []
@@ -66,7 +67,8 @@ class Scorer(object):
                 try:
                     sval = tx.transform(r[s.column])
                 except KeyError as err:
-                    raise ScoringError("data columns", err.message,
+                    raise ScoringError(
+                        "data columns", err.message,
                         datafile.header)
                 except ValueError:
                     sval = NAN

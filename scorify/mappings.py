@@ -67,7 +67,7 @@ class LinearMapping(Mapping):
         if irange == 0:
             raise MappingError("Input domain numbers can't be the same")
         try:
-            orange = output_domain[1] - output_domain[0]
+            output_domain[1] - output_domain[0]
         except TypeError:
             raise MappingError("{0} and {1} must both be numbers".format(
                 input_domain[1], input_domain[0]))
