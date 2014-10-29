@@ -43,9 +43,10 @@ def validate_arguments(arguments):
     s = Schema({
         '<scoresheet>': Use(make_csv, error="Can't open scoresheet"),
         '<datafile>': Use(make_csv, error="Can't open datafile"),
-        '--exclusions': Or(None, Use(make_csv, error="Can't open exclusions")),
+        '--exclusions': Or(
+            None, Use(make_csv, error="Can't open exclusions")),
         '--nans-as': str,
-        str: object # Ignore extras
+        str: object  # Ignore extras
         })
     return s.validate(arguments)
 
@@ -53,7 +54,8 @@ def validate_arguments(arguments):
 def main():
     logging.basicConfig(
         format="%(message)s", stream=sys.stderr, level=logging.INFO)
-    arguments = docopt(__doc__,
+    arguments = docopt(
+        __doc__,
         version="Scorify {0}".format(scorify.__version__))
     score_data(arguments)
 
@@ -87,7 +89,8 @@ def score_data(arguments):
             sys.exit(1)
     try:
         df.apply_exclusions(ss.exclude_section)
-        scored = scorer.Scorer.score(df, ss.transform_section, ss.score_section)
+        scored = scorer.Scorer.score(
+            df, ss.transform_section, ss.score_section)
         scorer.Scorer.add_measures(scored, ss.measure_section)
         print_data(scored, validated['--nans-as'])
 
