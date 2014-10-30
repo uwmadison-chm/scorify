@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-version = "0.2.1"
+version = "0.3.0"
 author = "Nathan Vack"
 author_email = "njvack@wisc.edu"
 license = "MIT"
