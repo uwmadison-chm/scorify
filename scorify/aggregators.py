@@ -21,14 +21,15 @@ expr_re = re.compile(r"""
 def parse_expr(expr):
     fx_map = {
         'sum': ag_sum,
-        'mean': ag_mean
+        'mean': ag_mean,
+        'join': ag_join,
     }
     try:
         fx_name, measure_names = expr_re.match(expr).groups()
         fx_name = fx_name.lower()
         measure_names = [m.strip() for m in measure_names.split(",")]
-    except AttributeError:
-        raise AggregatorError("I don't understand {0!r}".format(expr))
+    except AttributeError as err:
+        raise AggregatorError("I don't understand {0!r}: {1}".format(expr, err))
     try:
         fx = fx_map[fx_name]
     except KeyError:
@@ -43,6 +44,12 @@ def ag_sum(values):
 
 def ag_mean(values):
     return ag_sum(values)/float(len(values))
+
+
+def ag_join(values):
+    # Filters out empty values.
+    values = [str(v) for v in values if len(str(v).strip()) > 0]
+    return '|'.join([str(v) for v in values])
 
 
 class AggregatorError(ValueError):

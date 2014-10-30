@@ -8,14 +8,18 @@ from scorify import aggregators
 
 
 def test_good_parsing():
-    n, fx, cols = aggregators.parse_expr("sum(foo)")
+    n, fx, measures = aggregators.parse_expr("sum(foo)")
     assert n == 'sum'
     assert fx == aggregators.ag_sum
-    assert cols == ['foo']
-    n, fx, cols = aggregators.parse_expr("MEAN(foo, bar)")
+    assert measures == ['foo']
+    n, fx, measures = aggregators.parse_expr("MEAN(foo, bar)")
     assert n == 'mean'
     assert fx == aggregators.ag_mean
-    assert cols == ['foo', 'bar']
+    assert measures == ['foo', 'bar']
+    n, fx, measures = aggregators.parse_expr('join(foo, bar)')
+    assert n == 'join'
+    assert fx == aggregators.ag_join
+    assert measures == ['foo', 'bar']
 
 
 def test_bad_parses():
@@ -38,3 +42,12 @@ def test_sum_with_strings():
 def test_mean():
     ar = [1, 2, 3]
     assert aggregators.ag_mean(ar) == 2
+
+
+def test_join():
+    ar = ['foo', 'bar', 'baz']
+    assert aggregators.ag_join(ar) == 'foo|bar|baz'
+    ar = [1, 2, 3]
+    assert aggregators.ag_join(ar) == '1|2|3'
+    ar = ['foo', '', ' ', 'bar']
+    assert aggregators.ag_join(ar) == 'foo|bar'

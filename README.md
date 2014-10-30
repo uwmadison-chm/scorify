@@ -66,11 +66,25 @@ Sometimes, you'll want to reverse-score a column or otherwise change its value f
 
 `transform name mapper`
 
-Right now, the only mapper you can use is a linear mapping function. To reverse-score a 1-5 scale, you can:
+Right now, you can apply two transformations.
+
+#### `map()`
+
+A linear mapping. Example:
 
 `transform reverse map(1:5,5:1)`
 
-which will map the values 1,2,3,4,5 to 5,4,3,2,1.
+which will map the values 1,2,3,4,5 to 5,4,3,2,1. This will happily map values outside its input domain.
+
+#### `discrete_map()`
+
+A mapping for discrete values. Useful to map a numbers to human-meaningful values.
+
+`transform score_gender discrete_map("1":"f", "2","m")`
+
+Unmapped values will return a blank.
+
+This transform can be useful when combined with `join()` (below) to combine an array of checkboxes into one column.
 
 ### score
 
@@ -86,11 +100,31 @@ The score section is where you tell scorify which columns you want in your outpu
 
 The measure section computes aggregate measures of your scored data. These lines look like:
 
-`measure final_name aggregator(measure_name)`
+`measure final_name aggregator(measure_1, measure_2, ..., measure_n)`
 
-The aggregators we currently support are `sum()` and `mean()` (and I hope you can guess what those do) adding more would be really easy. So, to compute the sum of the `happy` measure and write it to a `happy` column, you'd say:
+We support three aggregators:
 
-`measure happy sum(happy)`
+#### `mean()`
+
+As you might expect, this calculates the mean of the measure or measures listed. Example:
+
+`measure happy mean(happy)`
+
+#### `sum()`
+
+Similarly, sum computes, y'know, the sum. Example:
+
+`measure sad sum(sad)`
+
+#### `join()`
+
+`join()` is a little trickier. It collects all the non-blank values in the listed measures, and joins them with the `|` character. Useful if you have a set of values selected by checkbox. For example, if you had three measures that would either be blank or not for things participants might endorse, you could collate them into one column with:
+
+`measure liked_pets join(likes_cats, likes_dogs, likes_horses)`
+
+If a participant had `cats` for `likes_cats` and `horses` for `likes_horses`, you'd get:
+
+`cats|horses`
 
 ## Complete example
 
