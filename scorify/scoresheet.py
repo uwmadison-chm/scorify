@@ -155,10 +155,7 @@ class RenameSection(Section):
             directives.Rename(string_list[0], string_list[1]))
 
     def append_directive(self, directive):
-        d = self.__has_conflict(directive)
-        if d:
-            raise SectionError(
-                "%s conflicts with %s" % (directive, d))
+        self.__raise_on_conflict(directive)
         self.mapper[directive.original_name] = directive.new_name
         super(RenameSection, self).append_directive(directive)
 
@@ -166,11 +163,13 @@ class RenameSection(Section):
         # Default to the original.
         return self.mapper.get(name, name)
 
-    def __has_conflict(self, directive):
-        for d in self.directives:
-            if directive.conflicts_with(d):
-                return d
-        return False
+    def __raise_on_conflict(self, directive):
+        conflict = next(
+            (d for d in self.directives if directive.conflicts_with(d)),
+            None)
+        if conflict:
+            raise SectionError(
+                "%s conflicts with %s" % (directive, conflict))
 
 
 class ExcludeSection(Section):
