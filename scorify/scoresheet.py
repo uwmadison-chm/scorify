@@ -10,6 +10,7 @@ class Scoresheet(object):
     def __init__(self):
         self.errors = []
         self.layout_section = LayoutSection()
+        self.rename_section = RenameSection()
         self.exclude_section = ExcludeSection()
         self.transform_section = TransformSection()
         self.score_section = ScoreSection()
@@ -44,6 +45,7 @@ class Reader(object):
             sheet = Scoresheet()
         section_map = {
             'layout': sheet.layout_section,
+            'rename': sheet.rename_section,
             'exclude': sheet.exclude_section,
             'transform': sheet.transform_section,
             'score': sheet.score_section,
@@ -138,6 +140,37 @@ class LayoutSection(Section):
             raise directives.DirectiveError(
                 "layout must be 'header', 'data', or 'skip'")
         self.append_directive(directives.Layout(string_list[0]))
+
+
+class RenameSection(Section):
+    def __init__(self, directives=None):
+        self.mapper = {}
+        super(RenameSection, self).__init__(directives)
+
+    def append_from_strings(self, string_list):
+        if len(string_list) < 2:
+            raise directives.DirectiveError(
+                "rename needs an original and new column name")
+        self.append_directive(
+            directives.Rename(string_list[0], string_list[1]))
+
+    def append_directive(self, directive):
+        d = self.__has_conflict(directive)
+        if d:
+            raise SectionError(
+                "%s conflicts with %s" % (directive, d))
+        self.mapper[directive.original_name] = directive.new_name
+        super(RenameSection, self).append_directive(directive)
+
+    def map_name(self, name):
+        # Default to the original.
+        return self.mapper.get(name, name)
+
+    def __has_conflict(self, directive):
+        for d in self.directives:
+            if directive.conflicts_with(d):
+                return d
+        return False
 
 
 class ExcludeSection(Section):

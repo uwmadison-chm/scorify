@@ -28,6 +28,18 @@ def data_with_funny_lengths():
 
 
 @pytest.fixture
+def empty_rename_section():
+    return scoresheet.RenameSection()
+
+
+@pytest.fixture
+def active_rename_section():
+    s = scoresheet.RenameSection()
+    s.append_from_strings(['happy1', 'happy_1'])
+    return s
+
+
+@pytest.fixture
 def layout_section_with_skip():
     ls = scoresheet.LayoutSection()
     ls.append_from_strings(['header'])
@@ -51,24 +63,42 @@ def exclude_section():
     return es
 
 
-def test_read_populates_header_data(good_data, layout_section_with_skip):
-    df = datafile.Datafile(good_data, layout_section_with_skip)
+def test_read_populates_header_data(
+        good_data, layout_section_with_skip, empty_rename_section):
+    df = datafile.Datafile(
+        good_data, layout_section_with_skip, empty_rename_section)
     df.read()
     assert df.header == good_data[0]
     assert df.data[0] == dict(zip(df.header, good_data[2]))
 
 
 def test_read_handles_odd_lengths(
-        data_with_funny_lengths, layout_section_no_skip):
-    df = datafile.Datafile(data_with_funny_lengths, layout_section_no_skip)
+        data_with_funny_lengths,
+        layout_section_no_skip,
+        empty_rename_section):
+    df = datafile.Datafile(
+        data_with_funny_lengths, layout_section_no_skip, empty_rename_section)
     df.read()
     assert len(df.data[0].values()) == len(df.header)
     assert len(df.data[1].values()) == len(df.header)
 
 
+def test_rename_changes_headers(
+        good_data, layout_section_with_skip, active_rename_section):
+    df = datafile.Datafile(
+        good_data, layout_section_with_skip, active_rename_section)
+    df.read()
+    assert 'happy_1' in df.header
+    assert 'happy1' not in df.header
+
+
 def test_apply_exclusions(
-        good_data, layout_section_with_skip, exclude_section):
-    df = datafile.Datafile(good_data, layout_section_with_skip)
+        good_data,
+        layout_section_with_skip,
+        exclude_section,
+        empty_rename_section):
+    df = datafile.Datafile(
+        good_data, layout_section_with_skip, empty_rename_section)
     df.read()
     assert len(df) == 3
     df.apply_exclusions(exclude_section)

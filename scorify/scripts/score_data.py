@@ -77,7 +77,8 @@ def score_data(arguments):
         exc_ss = scoresheet.Reader(
             validated['--exclusions']).read_into_scoresheet()
         exc = exc_ss.exclude_section
-    df = datafile.Datafile(validated['<datafile>'], ss.layout_section)
+    df = datafile.Datafile(
+        validated['<datafile>'], ss.layout_section, ss.rename_section)
     df.read()
     if exc is not None:
         try:

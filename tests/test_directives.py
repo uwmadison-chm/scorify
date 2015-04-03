@@ -26,6 +26,28 @@ def test_transforming_works():
     assert tx.transform(1) == 2
 
 
+def test_creating_rename():
+    # Just verify it exists; this directive doesn't do anything.
+    directives.Rename("foo", "bar")
+    # You need a new name
+    with pytest.raises(directives.DirectiveError):
+        directives.Rename("", "foo")
+    with pytest.raises(directives.DirectiveError):
+        directives.Rename("foo", "")
+    # And you can't rename something to itself
+    with pytest.raises(directives.DirectiveError):
+        directives.Rename("foo", "foo")
+
+
+def test_conflicts_with():
+    d = directives.Rename("foo", "bar")
+    assert d.conflicts_with(directives.Rename("foo", "baz"))
+    assert d.conflicts_with(directives.Rename("bar", "baz"))
+    assert d.conflicts_with(directives.Rename("baz", "foo"))
+    assert d.conflicts_with(directives.Rename("baz", "bar"))
+    assert not d.conflicts_with(directives.Rename("baz", "corge"))
+
+
 def test_measure():
     m = directives.Measure('foo', 'mean(c_foo)')
     assert m.agg_fx

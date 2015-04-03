@@ -16,6 +16,8 @@ layout,header
 layout,skip
  layout,data
 
+rename,happy_1,happy
+
 # This is a comment
 exclude,ppt,0000
 exclude,ppt,9999
@@ -42,6 +44,7 @@ def test_successful_read(good_sample_csv):
     assert type(ss) == scoresheet.Scoresheet
     assert ss.errors == []
     assert len(ss.layout_section) == 3
+    assert len(ss.rename_section) == 1
     assert len(ss.transform_section) == 3
     assert len(ss.score_section) == 5
     assert len(ss.measure_section) == 3
@@ -95,6 +98,28 @@ def test_layout_section_with_string_ary():
         ls.append_from_strings([])
     with pytest.raises(directives.DirectiveError):
         ls.append_from_strings(['foo'])
+
+
+def test_rename_section_with_string_list():
+    s = scoresheet.RenameSection()
+    s.append_from_strings(['foo', 'bar'])
+    assert len(s) == 1
+    assert s.map_name('foo') == 'bar'
+    assert s.map_name('baz') == 'baz'
+
+
+def test_rename_section_dupes():
+    s = scoresheet.RenameSection()
+    s.append_from_strings(["foo", "bar"])
+    # "foo" and "bar" are off-limits for any other renames
+    with pytest.raises(scoresheet.SectionError):
+        s.append_from_strings(["foo", "x"])
+    with pytest.raises(scoresheet.SectionError):
+        s.append_from_strings(["x", "foo"])
+    with pytest.raises(scoresheet.SectionError):
+        s.append_from_strings(["bar", "x"])
+    with pytest.raises(scoresheet.SectionError):
+        s.append_from_strings(["x", "bar"])
 
 
 def test_transform_section_dupes():

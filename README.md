@@ -52,6 +52,14 @@ layout data
 
 would tell scorify to expect a header row, skip a line, and then read the rest of the file as data.
 
+### rename
+
+The rename section renames a header column, and looks like:
+
+`rename original_name new_name`
+
+Columns can only be renamed once, and must use a new, unique name. You must use the column's new name everywhere in the scoresheet.
+
 ### exclude
 
 The format of an exclude line is:

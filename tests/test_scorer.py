@@ -43,7 +43,7 @@ def gender_score():
 
 @pytest.fixture
 def data_1():
-    df = datafile.Datafile(None, None)
+    df = datafile.Datafile(None, None, None)
     df.header = ['ppt', 'happy1', 'sad1', 'happy2', 'sad2', 'gender1']
     df.append_data(['a', '5', '2', '2', '4', '1'])
     df.append_data(['b', '2', '3', '4', '1', '3'])
@@ -52,7 +52,7 @@ def data_1():
 
 @pytest.fixture
 def data_with_bad():
-    df = datafile.Datafile(None, None)
+    df = datafile.Datafile(None, None, None)
     df.header = ['ppt', 'happy1', 'sad1', 'happy2', 'sad2']
     df.append_data(['a', 'bad', '2', 'bad', '4'])
     return df

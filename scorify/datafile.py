@@ -14,9 +14,10 @@ from scorify.errors import HaystackError
 
 
 class Datafile(object):
-    def __init__(self, lines, layout_section):
+    def __init__(self, lines, layout_section, rename_section):
         self.lines = lines
         self.layout_section = layout_section
+        self.rename_section = rename_section
         self.header = []
         self.data = []
         super(Datafile, self).__init__()
@@ -33,7 +34,8 @@ class Datafile(object):
             if line_type == 'skip':
                 continue
             if line_type == 'header':
-                self.header = [h.strip() for h in line]
+                self.header = [
+                    self.rename_section.map_name(h.strip()) for h in line]
             else:
                 self.append_data(line)
 

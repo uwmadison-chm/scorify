@@ -52,6 +52,37 @@ class Layout(object):
         super(Layout, self).__init__()
 
 
+class Rename(object):
+    """
+    Renames a column. Renamed columns must be referred to by the new name.
+    Does not allow giving a 0-length name. Empty names or names will be
+    rejected, too. Sorry if your column names are blank.
+
+    All logic for this is in the datafile, since that's the only place where
+    we know column names.
+    """
+    def __init__(self, original_name, new_name):
+        self.original_name = str(original_name)
+        self.new_name = str(new_name)
+        if len(self.original_name) == 0:
+            raise DirectiveError("Can't rename a blank column.")
+        if len(self.new_name) == 0:
+            raise DirectiveError("Can't give a column a blank name.")
+        if self.original_name == self.new_name:
+            raise DirectiveError(
+                "Can't rename a column to its original name.")
+
+    def conflicts_with(self, other):
+        return (
+            self.original_name == other.original_name or
+            self.original_name == other.new_name or
+            self.new_name == other.new_name or
+            self.new_name == other.original_name)
+
+    def __str__(self):
+        return "rename %s %s" % (self.original_name, self.new_name)
+
+
 class Exclude(object):
     """
     Skips a line in the data based on a column being equal to some value. So:
