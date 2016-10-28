@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages, Command
+from distutils.core import setup, Command
 import os
-
-packages = find_packages()
 
 
 class PyTest(Command):
@@ -25,7 +23,9 @@ class PyTest(Command):
 
 def get_locals(filename):
     l = {}
-    execfile(filename, {}, l)
+    with open(filename, 'r') as f:
+        code = compile(f.read(), filename, 'exec')
+        exec(code, {}, l)
     return l
 
 metadata = get_locals(os.path.join('scorify', '_metadata.py'))
@@ -37,7 +37,7 @@ setup(
     author_email=metadata['author_email'],
     license=metadata['license'],
     url=metadata['url'],
-    packages=find_packages(),
+    packages=['scorify'],
     cmdclass={'test': PyTest},
     entry_points={
         'console_scripts': [
