@@ -67,7 +67,7 @@ def score_data(arguments):
         logging.root.setLevel(logging.CRITICAL)
     if validated['--verbose']:
         logging.root.setLevel(logging.DEBUG)
-    logging.info(validated)
+    logging.debug(validated)
     # First, read the scoresheet and exclusions (if any)
     ss = scoresheet.Reader(validated['<scoresheet>']).read_into_scoresheet()
     if ss.has_errors():
