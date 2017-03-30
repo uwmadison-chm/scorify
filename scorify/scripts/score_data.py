@@ -15,6 +15,7 @@ Options:
   --exclusions=<file>  A scoresheet with additional exclude commands
   --nans-as=<string>   Print NaNs as this [default: NaN]
   -q --quiet           Don't print errors
+  -v, --verbose        Print extra debugging output
 """
 
 import os
@@ -64,6 +65,9 @@ def score_data(arguments):
     validated = validate_arguments(arguments)
     if validated['--quiet']:
         logging.root.setLevel(logging.CRITICAL)
+    if validated['--verbose']:
+        logging.root.setLevel(logging.DEBUG)
+    logging.info(validated)
     # First, read the scoresheet and exclusions (if any)
     ss = scoresheet.Reader(validated['<scoresheet>']).read_into_scoresheet()
     if ss.has_errors():
