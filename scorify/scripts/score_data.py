@@ -14,6 +14,8 @@ Options:
   --version            Show version
   --exclusions=<file>  A scoresheet with additional exclude commands
   --nans-as=<string>   Print NaNs as this [default: NaN]
+  --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
+                       'excel-tab' [default: excel]
   -q --quiet           Don't print errors
   -v, --verbose        Print extra debugging output
 """
@@ -25,27 +27,24 @@ import logging
 
 import scorify
 from scorify.vendor.docopt import docopt
-from scorify.vendor.schema import Schema, Use, Or
+from scorify.vendor.schema import Schema, Use, Or, And, SchemaError
 from scorify import scoresheet, datafile, scorer
 from scorify.utils import pp
 
-
-def make_csv(fname):
-    f = open(os.path.expanduser(fname), 'rU')
-    try:
-        dialect = csv.Sniffer().sniff(f.read())
-    except:
-        dialect = csv.excel
-    f.seek(0)
-    return csv.reader(f, dialect)
+def open_for_read(fname):
+    return open(os.path.expanduser(fname), 'rU')
 
 
 def validate_arguments(arguments):
     s = Schema({
-        '<scoresheet>': Use(make_csv, error="Can't open scoresheet"),
-        '<datafile>': Use(make_csv, error="Can't open datafile"),
+        '<scoresheet>': Use(open_for_read, error="Can't open scoresheet"),
+        '<datafile>': Use(open_for_read, error="Can't open datafile"),
         '--exclusions': Or(
-            None, Use(make_csv, error="Can't open exclusions")),
+            None, Use(open_for_read, error="Can't open exclusions")),
+        '--dialect': And(
+            Use(str.lower),
+            lambda s: s in ['excel', 'excel-tab'],
+            error="Dialect must be excel or excel-tab"),
         '--nans-as': str,
         str: object  # Ignore extras
         })
@@ -62,14 +61,21 @@ def main():
 
 
 def score_data(arguments):
-    validated = validate_arguments(arguments)
+    # This method is way too long, I know.
+    try:
+        validated = validate_arguments(arguments)
+    except SchemaError as e:
+        logging.error("Error: " + e.message)
+        sys.exit(1)
     if validated['--quiet']:
         logging.root.setLevel(logging.CRITICAL)
     if validated['--verbose']:
         logging.root.setLevel(logging.DEBUG)
     logging.debug(validated)
+    dialect = validated['--dialect']
+    scoresheet_csv = csv.reader(validated['<scoresheet>'], dialect=dialect)
     # First, read the scoresheet and exclusions (if any)
-    ss = scoresheet.Reader(validated['<scoresheet>']).read_into_scoresheet()
+    ss = scoresheet.Reader(scoresheet_csv).read_into_scoresheet()
     if ss.has_errors():
         logging.error("Errors in {0}:".format(arguments['<scoresheet>']))
         for err in ss.errors:
@@ -78,11 +84,14 @@ def score_data(arguments):
 
     exc = None
     if validated['--exclusions'] is not None:
-        exc_ss = scoresheet.Reader(
-            validated['--exclusions']).read_into_scoresheet()
+        exclusions_csv = csv.reader(
+            validated['--exclusions'],
+            dialect=dialect)
+        exc_ss = scoresheet.Reader(exclusions_csv).read_into_scoresheet()
         exc = exc_ss.exclude_section
+    datafile_csv = csv.reader(validated['<datafile>'], dialect=dialect)
     df = datafile.Datafile(
-        validated['<datafile>'], ss.layout_section, ss.rename_section)
+        datafile_csv, ss.layout_section, ss.rename_section)
     df.read()
     if exc is not None:
         try:
@@ -97,7 +106,7 @@ def score_data(arguments):
         scored = scorer.Scorer.score(
             df, ss.transform_section, ss.score_section)
         scorer.Scorer.add_measures(scored, ss.measure_section)
-        print_data(scored, validated['--nans-as'])
+        print_data(scored, validated['--nans-as'], dialect)
 
     except datafile.ExclusionError as err:
         logging.critical("Error in exclusions of {0}:".format(
@@ -115,8 +124,8 @@ def score_data(arguments):
         logging.critical(err.message)
 
 
-def print_data(sd, nans_as):
-    out = csv.writer(sys.stdout, delimiter="\t")
+def print_data(sd, nans_as, dialect):
+    out = csv.writer(sys.stdout, dialect=dialect)
     out.writerow(sd.header)
     for row in sd:
         rl = [pp(row[h], none_val=nans_as) for h in sd.header]
