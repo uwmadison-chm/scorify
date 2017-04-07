@@ -88,7 +88,7 @@ which will map the values 1,2,3,4,5 to 5,4,3,2,1. This will happily map values o
 
 A mapping for discrete values. Useful to map a numbers to human-meaningful values.
 
-`transform score_gender discrete_map("1":"f", "2","m")`
+`transform score_gender discrete_map("1":"f", "2":"m")`
 
 Unmapped values will return a blank.
 
