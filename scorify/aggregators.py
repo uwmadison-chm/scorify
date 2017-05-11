@@ -6,6 +6,7 @@
 Aggregators are functions that consense sets of numbers into single ones.
 They're used by measure directives.
 """
+from __future__ import absolute_import
 
 import math
 import re

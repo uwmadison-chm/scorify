@@ -2,7 +2,7 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
-from __future__ import division
+from __future__ import division, absolute_import
 import re
 
 """

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
+from __future__ import absolute_import
 
 from collections import defaultdict
 from scorify.errors import HaystackError

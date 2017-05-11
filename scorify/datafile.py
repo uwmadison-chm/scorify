@@ -9,6 +9,7 @@ Datafiles are iterable and indexable by column name. When reading, you pass
 in a scoresheet.LayoutSection, which tells you where data and header sections
 are.
 """
+from __future__ import absolute_import
 
 from scorify.errors import HaystackError
 

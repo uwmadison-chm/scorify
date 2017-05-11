@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
+from __future__ import absolute_import
 
-import directives
-import mappings
+from scorify import directives
+from scorify import mappings
 
 
 class Scoresheet(object):
