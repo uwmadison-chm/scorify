@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 
@@ -12,6 +12,7 @@ def get_locals(filename):
         exec(code, {}, l)
     return l
 
+
 metadata = get_locals(os.path.join('scorify', '_metadata.py'))
 
 setup(
@@ -21,7 +22,7 @@ setup(
     author_email=metadata['author_email'],
     license=metadata['license'],
     url=metadata['url'],
-    packages=['scorify'],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'score_data = scorify.scripts.score_data:main'
