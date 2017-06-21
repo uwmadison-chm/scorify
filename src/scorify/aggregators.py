@@ -24,6 +24,7 @@ def parse_expr(expr):
         'sum': ag_sum,
         'mean': ag_mean,
         'join': ag_join,
+        'ratio': ag_ratio,
     }
     try:
         fx_name, measure_names = expr_re.match(expr).groups()
@@ -51,6 +52,12 @@ def ag_join(values):
     # Filters out empty values.
     values = [str(v) for v in values if len(str(v).strip()) > 0]
     return '|'.join([str(v) for v in values])
+
+
+def ag_ratio(values):
+    if len(values) != 2:
+        raise AggregatorError("ratio() needs two values")
+    return float(values[0] / float(values[1]))
 
 
 class AggregatorError(ValueError):

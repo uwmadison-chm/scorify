@@ -18,9 +18,12 @@ class ScoredData(object):
     def columns_for(self, measure_list):
         out = []
         for name in measure_list:
-            if name not in self.measure_columns:
+            if name in self.measure_columns:
+                out.extend(self.measure_columns[name])
+            elif name in self.header:
+                out.append(name)
+            else:
                 raise KeyError(name)
-            out.extend(self.measure_columns[name])
         return out
 
     def known_measures(self):

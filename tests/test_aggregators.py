@@ -20,6 +20,10 @@ def test_good_parsing():
     assert n == 'join'
     assert fx == aggregators.ag_join
     assert measures == ['foo', 'bar']
+    n, fx, measures = aggregators.parse_expr('ratio(foo, bar)')
+    assert n == 'ratio'
+    assert fx == aggregators.ag_ratio
+    assert measures == ['foo', 'bar']
 
 
 def test_bad_parses():
@@ -51,3 +55,8 @@ def test_join():
     assert aggregators.ag_join(ar) == '1|2|3'
     ar = ['foo', '', ' ', 'bar']
     assert aggregators.ag_join(ar) == 'foo|bar'
+
+
+def test_ratio():
+    ar = [1, 2]
+    assert aggregators.ag_ratio(ar) == 0.5

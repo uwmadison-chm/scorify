@@ -35,6 +35,8 @@ score,gender,gender,gender
 measure,mean_happy,mean(happy)
 measure,mean_sad,mean(sad)
 measure,emo_vals,"join(happy, sad)"
+measure,happy_ratio,"ratio(mean_happy,mean_sad)"
+
 """))
 
 
@@ -47,7 +49,7 @@ def test_successful_read(good_sample_csv):
     assert len(ss.rename_section) == 1
     assert len(ss.transform_section) == 3
     assert len(ss.score_section) == 5
-    assert len(ss.measure_section) == 3
+    assert len(ss.measure_section) == 4
 
 
 def test_section_iterates():

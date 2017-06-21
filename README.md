@@ -134,6 +134,10 @@ If a participant had `cats` for `likes_cats` and `horses` for `likes_horses`, yo
 
 `cats|horses`
 
+#### `ratio()`
+
+`ratio(a, b)` will compute the ratio of two columns; in other words: `a / b`. Notably, this works on other measures, so you can take the ratio of sums or means. In those cases, the ratio line needs to come after the other measures' lines do.
+
 ## Complete example
 
 If you take a scoresheet that looks like:
@@ -151,6 +155,7 @@ If you take a scoresheet that looks like:
 <tr><td>score</td><td>HAPPY_Q2</td><td>happy</td><td>reverse</td></tr>
 <tr><td>measure</td><td>happy_score</td><td>mean(happy)</td><td> </td></tr>
 <tr><td>measure</td><td>sad_score</td><td>mean(sad)</td><td> </td></tr>
+<tr><td>measure</td><td>happiness_ratio</td><td>ratio(happy_score, sad_score)</td><td> </td></tr>
 </table>
 
 and run it on data that looks like:
@@ -161,12 +166,12 @@ and run it on data that looks like:
 <tr><td>ppt2</td><td>bar</td><td>2</td><td>5</td><td>5</td></tr>
 </table>
 
-and you'll get output like:
+... you'll get output like:
 
 <table>
-<tr><td>PPT_COL</td><td>HAPPY_Q1: happy</td><td>SAD_Q1: sad</td><td>HAPPY_Q2: happy</td><td>happy_score</td><td>sad_score</td></tr>
-<tr><td>ppt1</td>4<td></td><td>2</td><td>3</td><td>3.5</td><td>2</td></tr>
-<tr><td>ppt2</td>2<td></td><td>5</td><td>1</td><td>1.5</td><td>5</td></tr>
+<tr><td>PPT_COL</td><td>HAPPY_Q1: happy</td><td>SAD_Q1: sad</td><td>HAPPY_Q2: happy</td><td>happy_score</td><td>sad_score</td><td>happiness_ratio</td></tr>
+<tr><td>ppt1</td>4<td></td><td>2</td><td>3</td><td>3.5</td><td>2</td><td>1.75</td></tr>
+<tr><td>ppt2</td>2<td></td><td>5</td><td>1</td><td>1.5</td><td>5</td><td>0.3</td></tr>
 </table>
 
 ## Credits
