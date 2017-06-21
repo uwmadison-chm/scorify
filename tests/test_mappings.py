@@ -59,11 +59,11 @@ def test_linear_mapping_from_string():
 
 
 def test_discrete_mapping_from_string():
-    m = DiscreteMapping.from_string('string_map("1":"f","2":"m")')
+    m = DiscreteMapping.from_string('discrete_map("1":"f","2":"m")')
     assert m.map_dict == {"1": "f", "2": "m"}
     # And let's get trickier
     m = DiscreteMapping.from_string(
-        r'string_map("1\"": "f" , "2" :"m")')
+        r'discrete_map("1\"": "f" , "2" :"m")')
     assert m.map_dict == {r'1"': "f", "2": "m"}
 
 
