@@ -21,6 +21,7 @@ Options:
 """
 
 import os
+import io
 import sys
 import csv
 import logging
@@ -31,8 +32,9 @@ from scorify.vendor.schema import Schema, Use, Or, And, SchemaError
 from scorify import scoresheet, datafile, scorer
 from scorify.utils import pp
 
+
 def open_for_read(fname):
-    return open(os.path.expanduser(fname), 'rU')
+    return io.open(os.path.expanduser(fname), 'rU', encoding='utf-8-sig')
 
 
 def validate_arguments(arguments):
@@ -47,7 +49,7 @@ def validate_arguments(arguments):
             error="Dialect must be excel or excel-tab"),
         '--nans-as': str,
         str: object  # Ignore extras
-        })
+    })
     return s.validate(arguments)
 
 
