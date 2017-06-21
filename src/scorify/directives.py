@@ -160,6 +160,7 @@ class Measure(object):
             fname, fx, to_use = aggregators.parse_expr(aggregation_expr)
             self.agg_fx = fx
             self.to_use = to_use
+
         except aggregators.AggregatorError as exc:
             raise DirectiveError(exc.message)
 
