@@ -7,7 +7,8 @@ from __future__ import with_statement
 import pytest
 
 from scorify.mappings import (
-    Mapping, Identity, LinearMapping, DiscreteMapping, MappingError)
+    Mapping, Identity, LinearMapping, DiscreteMapping, MappingError,
+    PassthroughMapping)
 
 
 def test_identity():
@@ -74,9 +75,23 @@ def test_discrete_mapping_transform():
     assert m.transform("3") == ""
 
 
+def test_passthrough_mapping_from_string():
+    m = PassthroughMapping.from_string('passthrough_map("1":"f","2":"m")')
+    assert m.map_dict == {"1": "f", "2": "m"}
+
+
+def test_passthrough_mapping_transform():
+    m = PassthroughMapping({"1": "f", "2": "m"})
+    assert m.transform("1") == "f"
+    assert m.transform("3") == "3"
+
+
 def test_mapping_types():
     assert type(Mapping.from_string('')) == Identity
     assert type(Mapping.from_string('i')) == Identity
     assert type(Mapping.from_string('map(1:3,2:4)')) == LinearMapping
     assert type(
         Mapping.from_string('discrete_map("a":"b")')) == DiscreteMapping
+
+    assert type(
+        Mapping.from_string('passthrough_map("a":"b")')) == PassthroughMapping

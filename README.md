@@ -94,6 +94,14 @@ Unmapped values will return a blank.
 
 This transform can be useful when combined with `join()` (below) to combine an array of checkboxes into one column.
 
+#### `passthrough_map()`
+
+Like `discrete_map()`, though unmapped values will be unchanged. So, if you have:
+
+`transform score_gender passthrough_map("1":"f", "2":"m")`
+
+a value of "999" will still be "999".
+
 ### score
 
 The score section is where you tell scorify which columns you want in your output, what measure (if any) they belong to, and what transform (again, if any) you want to apply. These look like

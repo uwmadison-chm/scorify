@@ -33,6 +33,8 @@ class Mapping(object):
             return LinearMapping.from_string(fx_string)
         if fx_string.find("discrete_map(") == 0:
             return DiscreteMapping.from_string(fx_string)
+        if fx_string.find("passthrough_map(") == 0:
+            return PassthroughMapping.from_string(fx_string)
 
 
 class Identity(Mapping):
@@ -127,6 +129,14 @@ class DiscreteMapping(Mapping):
             (ues(match.group(1)), ues(match.group(2)))
             for match in re.finditer(discrete_mapping_re, fx_string)))
         return kls(result)
+
+
+class PassthroughMapping(DiscreteMapping):
+    def __init__(self, map_dict):
+        super(PassthroughMapping, self).__init__(map_dict)
+
+    def transform(self, value):
+        return self.map_dict.get(value, value)
 
 
 class MappingError(ValueError):
