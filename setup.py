@@ -13,18 +13,20 @@ def get_locals(filename):
     return l
 
 
-metadata = get_locals(os.path.join('scorify', '_metadata.py'))
+metadata = get_locals(os.path.join('src', 'scorify', '_metadata.py'))
 
 setup(
     name="scorify",
     version=metadata['version'],
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     author=metadata['author'],
     author_email=metadata['author_email'],
     license=metadata['license'],
     url=metadata['url'],
-    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'score_data = scorify.scripts.score_data:main'
-        ]}
-    )
+        ]
+    }
+)
