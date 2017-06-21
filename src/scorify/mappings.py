@@ -112,12 +112,10 @@ class DiscreteMapping(Mapping):
         self.map_dict = map_dict
 
     def transform(self, value):
-        if value in self.map_dict:
-            return self.map_dict[value]
         # In the case where there's no match, it's probably best to return an
         # empty string. They'll always see the original value in the output
         # anyhow.
-        return ''
+        return self.map_dict.get(value, '')
 
     @classmethod
     def from_string(kls, fx_string):
