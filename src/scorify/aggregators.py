@@ -11,6 +11,8 @@ from __future__ import absolute_import
 import math
 import re
 
+NAN = float('nan')
+
 expr_re = re.compile(r"""
     (\w+)  # Function name
     \(
@@ -57,7 +59,10 @@ def ag_join(values):
 def ag_ratio(values):
     if len(values) != 2:
         raise AggregatorError("ratio() needs two values")
-    return float(values[0] / float(values[1]))
+    try:
+        return float(values[0] / float(values[1]))
+    except ZeroDivisionError:
+        return NAN
 
 
 class AggregatorError(ValueError):

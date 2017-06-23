@@ -4,6 +4,8 @@
 
 import pytest
 
+import math
+
 from scorify import aggregators
 
 
@@ -60,3 +62,8 @@ def test_join():
 def test_ratio():
     ar = [1, 2]
     assert aggregators.ag_ratio(ar) == 0.5
+
+
+def test_ratio_with_zero():
+    ar = [1, 0]
+    assert math.isnan(aggregators.ag_ratio(ar))
