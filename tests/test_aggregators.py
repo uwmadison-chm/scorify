@@ -26,6 +26,12 @@ def test_good_parsing():
     assert n == 'ratio'
     assert fx == aggregators.ag_ratio
     assert measures == ['foo', 'bar']
+    n, fx, measures = aggregators.parse_expr('max(foo, bar)')
+    assert fx == aggregators.ag_max
+    assert measures == ['foo', 'bar']
+    n, fx, measures = aggregators.parse_expr('min(foo, bar)')
+    assert fx == aggregators.ag_min
+    assert measures == ['foo', 'bar']
 
 
 def test_bad_parses():
@@ -67,3 +73,13 @@ def test_ratio():
 def test_ratio_with_zero():
     ar = [1, 0]
     assert math.isnan(aggregators.ag_ratio(ar))
+
+
+def test_max():
+    ar = [1, 5, 2]
+    assert aggregators.ag_max(ar) == 5
+
+
+def test_min():
+    ar = [1, 5, 2]
+    assert aggregators.ag_min(ar) == 1

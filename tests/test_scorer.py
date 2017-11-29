@@ -87,6 +87,14 @@ def measures_with_ratio():
 
 
 @pytest.fixture
+def measures_with_minmax():
+    ms = scoresheet.MeasureSection()
+    ms.append_from_strings(['min_emo', 'min(happy, sad)'])
+    ms.append_from_strings(['max_happy', 'max(happy)'])
+    return ms
+
+
+@pytest.fixture
 def measures_bad():
     ms = scoresheet.MeasureSection()
     ms.append_from_strings(['happy', 'sum(badness)'])
@@ -127,6 +135,14 @@ def test_scorer_measures(scored_data_1, measures_1):
 def test_scorer_does_ratio(scored_data_2, measures_with_ratio):
     scorer.Scorer.add_measures(scored_data_2, measures_with_ratio)
     assert scored_data_2.data[0]['ratio_happy'] == 9.0 / 4.0
+
+
+def test_scorer_minmax(scored_data_2, measures_with_minmax):
+    scorer.Scorer.add_measures(scored_data_2, measures_with_minmax)
+    assert scored_data_2.data[0]['min_emo'] == 2
+    assert scored_data_2.data[0]['max_happy'] == 5
+    assert scored_data_2.data[1]['min_emo'] == 2
+    assert scored_data_2.data[1]['max_happy'] == 2
 
 
 def test_measures_fail_with_bad_name(scored_data_1, measures_bad):

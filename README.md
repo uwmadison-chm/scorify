@@ -118,7 +118,7 @@ The measure section computes aggregate measures of your scored data. These lines
 
 `measure final_name aggregator(measure_1, measure_2, ..., measure_n)`
 
-We support three aggregators:
+We support the following aggregators:
 
 #### `mean()`
 
@@ -145,6 +145,14 @@ If a participant had `cats` for `likes_cats` and `horses` for `likes_horses`, yo
 #### `ratio()`
 
 `ratio(a, b)` will compute the ratio of two columns; in other words: `a / b`. Notably, this works on other measures, so you can take the ratio of sums or means. In those cases, the ratio line needs to come after the other measures' lines do.
+
+#### `min()`
+
+`min(measure_1, measure_2)` will output the minimum numeric value in the given measures. Non-numeric values will cause NaN.
+
+#### `max()`
+
+`max(measure_1, measure_2)` will output the maximum numeric value in the given measures. Non-numeric values will cause NaN.
 
 ## Complete example
 

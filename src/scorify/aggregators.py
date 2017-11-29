@@ -27,6 +27,8 @@ def parse_expr(expr):
         'mean': ag_mean,
         'join': ag_join,
         'ratio': ag_ratio,
+        'max': ag_max,
+        'min': ag_min,
     }
     try:
         fx_name, measure_names = expr_re.match(expr).groups()
@@ -63,6 +65,14 @@ def ag_ratio(values):
         return float(values[0] / float(values[1]))
     except ZeroDivisionError:
         return NAN
+
+
+def ag_max(values):
+    return max([float(v) for v in values])
+
+
+def ag_min(values):
+    return min([float(v) for v in values])
 
 
 class AggregatorError(ValueError):
