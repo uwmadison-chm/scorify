@@ -23,18 +23,22 @@ should have you set up.
 
 #### `score_data`
 
-    Score questionnaire responses.
+``` Score questionnaire responses.
 
-    Usage:
-      score_data [options] <scoresheet> <datafile>
-      score_data -h | --help
+Usage:
+  score_data [options] <scoresheet> <datafile>
+  score_data -h | --help
 
-    Options:
-      -h --help            Show this screen
-      --version            Show version
-      --exclusions=<file>  A scoresheet with additional exclude commands
-      --nans-as=<string>   Print NaNs as this [default: NaN]
-      -q --quiet           Don't print errors
+Options:
+  -h --help            Show this screen
+  --version            Show version
+  --exclusions=<file>  A scoresheet with additional exclude commands
+  --nans-as=<string>   Print NaNs as this [default: NaN]
+  --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
+                       'excel-tab' [default: excel]
+  -q --quiet           Don't print errors
+  -v, --verbose        Print extra debugging output
+```
 
 ## Scoresheets
 
