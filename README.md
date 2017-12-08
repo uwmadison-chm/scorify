@@ -23,7 +23,8 @@ should have you set up.
 
 #### `score_data`
 
-``` Score questionnaire responses.
+```
+Score questionnaire responses.
 
 Usage:
   score_data [options] <scoresheet> <datafile>
