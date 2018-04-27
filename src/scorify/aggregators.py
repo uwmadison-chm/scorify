@@ -6,12 +6,12 @@
 Aggregators are functions that consense sets of numbers into single ones.
 They're used by measure directives.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import math
 import re
 
-NAN = float('nan')
+NaN = float('nan')
 
 expr_re = re.compile(r"""
     (\w+)  # Function name
@@ -24,7 +24,10 @@ expr_re = re.compile(r"""
 def parse_expr(expr):
     fx_map = {
         'sum': ag_sum,
+        'sum_imputed': ag_sum_imputed,
         'mean': ag_mean,
+        'mean_imputed': ag_mean_imputed,
+        'imputed_fraction': ag_imputed_fraction,
         'join': ag_join,
         'ratio': ag_ratio,
         'max': ag_max,
@@ -35,12 +38,35 @@ def parse_expr(expr):
         fx_name = fx_name.lower()
         measure_names = [m.strip() for m in measure_names.split(",")]
     except AttributeError as err:
-        raise AggregatorError("I don't understand {0!r}: {1}".format(expr, err))
+        raise AggregatorError(
+            "I don't understand {0!r}: {1}".format(expr, err))
     try:
         fx = fx_map[fx_name]
     except KeyError:
         raise AggregatorError("I don't know {0}".format(fx_name))
     return (fx_name, fx, measure_names)
+
+
+def to_f(val):
+    try:
+        return float(val)
+    except TypeError:
+        return None
+
+
+def float_or_imputed(value, imputed_value):
+    return to_f(value) or imputed_value
+
+
+def numeric_only(values):
+    floated_vals = [to_f(val) for val in values]
+    return [val for val in floated_vals if val]
+
+
+def impute_mean(values):
+    numeric_values = numeric_only(values)
+    mean_val = ag_mean(numeric_values)
+    return [float_or_imputed(val, mean_val) for val in values]
 
 
 # sum is a reserved word in python because goddammt
@@ -49,7 +75,29 @@ def ag_sum(values):
 
 
 def ag_mean(values):
-    return ag_sum(values)/float(len(values))
+    return ag_sum(values)/(len(values))
+
+
+def ag_mean_imputed(values):
+    try:
+        with_imputed = impute_mean(values)
+        return ag_mean(with_imputed)
+    except ZeroDivisionError:
+        return NaN
+
+
+def ag_sum_imputed(values):
+    try:
+        with_imputed = impute_mean(values)
+        return ag_sum(with_imputed)
+    except ZeroDivisionError:
+        return NaN
+
+
+def ag_imputed_fraction(values):
+    """ The fraction of non-float-able items in values """
+    imputed_count = len(values) - len(numeric_only(values))
+    return imputed_count / len(values)
 
 
 def ag_join(values):
@@ -64,7 +112,7 @@ def ag_ratio(values):
     try:
         return float(values[0] / float(values[1]))
     except ZeroDivisionError:
-        return NAN
+        return NaN
 
 
 def ag_max(values):

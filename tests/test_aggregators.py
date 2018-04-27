@@ -2,6 +2,8 @@
 # Part of the scorify package
 # Copyright 2014 Board of Regents of the University of Wisconsin System
 
+from __future__ import absolute_import, division
+
 import pytest
 
 import math
@@ -32,6 +34,19 @@ def test_good_parsing():
     n, fx, measures = aggregators.parse_expr('min(foo, bar)')
     assert fx == aggregators.ag_min
     assert measures == ['foo', 'bar']
+    n, fx, measures = aggregators.parse_expr('sum_imputed(foo)')
+    assert n == 'sum_imputed'
+    assert fx == aggregators.ag_sum_imputed
+    assert measures == ['foo']
+    n, fx, measures = aggregators.parse_expr('mean_imputed(foo)')
+    assert n == 'mean_imputed'
+    assert fx == aggregators.ag_mean_imputed
+    assert measures == ['foo']
+    n, fx, measures = aggregators.parse_expr('imputed_fraction(foo)')
+    assert n == 'imputed_fraction'
+    assert fx == aggregators.ag_imputed_fraction
+    assert measures == ['foo']
+
 
 
 def test_bad_parses():
@@ -83,3 +98,21 @@ def test_max():
 def test_min():
     ar = [1, 5, 2]
     assert aggregators.ag_min(ar) == 1
+
+
+def test_mean_imputed():
+    ar = [1, None, 3, 5]
+    ar_filtered = [a for a in ar if a]
+    assert aggregators.ag_mean_imputed(ar) == aggregators.ag_mean(ar_filtered)
+    assert math.isnan(aggregators.ag_mean_imputed([None, None]))
+
+
+def test_sum_imputed():
+    ar = [1, None, 3, 5]
+    assert aggregators.ag_sum_imputed(ar) == (1 + 3 + 3 + 5)
+    assert math.isnan(aggregators.ag_sum_imputed([None, None]))
+
+
+def test_imputed_fraction():
+    ar = [1, None, 3, 5]
+    assert aggregators.ag_imputed_fraction(ar) == (1/4)

@@ -131,11 +131,27 @@ As you might expect, this calculates the mean of the measure or measures listed.
 
 `measure happy mean(happy)`
 
+If any values in the measures are non-numeric, returns NaN.
+
+#### `mean_imputed()`
+
+Computes the mean of the measure. However, if any of the values in the measures are non-numeric, this fills in the mean of the numeric values. For example, `mean_imputed(1, '', 3, 5)` is `3`.
+
 #### `sum()`
 
-Similarly, sum computes, y'know, the sum. Example:
+Computes the sum fo the listed measures. Example:
 
 `measure sad sum(sad)`
+
+If any values in the measures are non-numeric, returns NaN.
+
+#### `sum_imputed()`
+
+Computes the sum of the measure. However, if any of the values in the measures are non-numeric, this fills in the mean of the numeric values. For example, `sum_imputed(1, '', 3, 5)` is `12`.
+
+#### `imputed_fcatsion()`
+
+The fraction of the data that is non-zero and would have a value imputed for it. `imputed_fraction(1, '', 3, 5)` is 0.25.
 
 #### `join()`
 
