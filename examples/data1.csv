@@ -1,0 +1,4 @@
+id,foo_a,foo_b,foo_c,foo_d,bar_a,bar_b,bar_c,bar_d
+1,6,4,4,skipped,4,skipped,3,5
+2,1,4,5,3,5,1,6,1
+3,,,,,,,4,
