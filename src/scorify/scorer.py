@@ -6,7 +6,7 @@ from __future__ import absolute_import
 from collections import defaultdict
 from scorify.errors import HaystackError
 
-NAN = float('nan')
+NaN = float('nan')
 
 
 class ScoredData(object):
@@ -75,7 +75,7 @@ class Scorer(object):
                         "data columns", err.message,
                         datafile.header)
                 except ValueError:
-                    sval = NAN
+                    sval = NaN
                 scored[name] = sval
             out.data.append(scored)
 
@@ -96,7 +96,7 @@ class Scorer(object):
                 try:
                     row[m.name] = m.agg_fx(vals)
                 except ValueError:
-                    row[m.name] = NAN
+                    row[m.name] = NaN
 
 
 class TransformError(HaystackError):
