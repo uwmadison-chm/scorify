@@ -10,6 +10,7 @@ from __future__ import absolute_import, division
 
 import math
 import re
+import logging
 
 NaN = float('nan')
 
@@ -47,10 +48,18 @@ def parse_expr(expr):
     return (fx_name, fx, measure_names)
 
 
+def isfinite(val):
+    try:
+        f_val = float(val)
+    except (TypeError, ValueError):
+        return False
+    return not (math.isnan(f_val) or math.isinf(f_val))
+
+
 def to_f(val):
     try:
         return float(val)
-    except TypeError:
+    except (TypeError, ValueError):
         return None
 
 
@@ -60,7 +69,7 @@ def float_or_imputed(value, imputed_value):
 
 def numeric_only(values):
     floated_vals = [to_f(val) for val in values]
-    return [val for val in floated_vals if val]
+    return [val for val in floated_vals if isfinite(val)]
 
 
 def impute_mean(values):
@@ -81,7 +90,9 @@ def ag_mean(values):
 def ag_mean_imputed(values):
     try:
         with_imputed = impute_mean(values)
-        return ag_mean(with_imputed)
+        mean_val = ag_mean(with_imputed)
+        logging.debug("mean({}): {}".format(with_imputed, mean_val))
+        return mean_val
     except ZeroDivisionError:
         return NaN
 
@@ -89,7 +100,9 @@ def ag_mean_imputed(values):
 def ag_sum_imputed(values):
     try:
         with_imputed = impute_mean(values)
-        return ag_sum(with_imputed)
+        sum_val = ag_sum(with_imputed)
+        logging.debug("sum({}): {}".format(with_imputed, sum_val))
+        return sum_val
     except ZeroDivisionError:
         return NaN
 
