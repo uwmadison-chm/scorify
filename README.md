@@ -1,11 +1,10 @@
-scorify
-=======
+# Welcome to the scorify project
 
 A simple tool for scoring psychological self-report questionnaires.
 
 ## Background
 
-Many psychology studies use one or more self-report questionnaires to understand their participants. Generally, these are recorded by software programs that let you download a CSV file of the results, one participant per row, one question per column.
+Many psychology studies use one or more self-report questionnaires to understand their participants. These responses go into CSV files with one question per column, one participant per row.
 
 Scoring these files is a bunch of work. Oftentimes, many questionnaires (or sub-scales) are included in one CSV file. Often, half of the questions are "reverse-scored" to combat the tendancy people have to agree with questions. Scoring these files usually means spending a whole bunch of time in Excel, and no one likes doing that.
 
@@ -19,29 +18,11 @@ scorify has no dependencies (execpt Python 2.? probably 5) or greater. So:
 
 should have you set up.
 
-## Installed commands:
+## Getting started
 
-#### `score_data`
+TODO write this section
 
-```
-Score questionnaire responses.
-
-Usage:
-  score_data [options] <scoresheet> <datafile>
-  score_data -h | --help
-
-Options:
-  -h --help            Show this screen
-  --version            Show version
-  --exclusions=<file>  A scoresheet with additional exclude commands
-  --nans-as=<string>   Print NaNs as this [default: NaN]
-  --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
-                       'excel-tab' [default: excel]
-  -q --quiet           Don't print errors
-  -v, --verbose        Print extra debugging output
-```
-
-## Scoresheets
+## Scoresheet reference
 
 The main input to scorify is a comma or tab-delimited "scoresheet" that has many rows and four columns. The first column tells what kind of command the row will be, and will be one of: `layout`, `exclude`, `transform`, `score`, or `measure`.
 
@@ -149,7 +130,7 @@ If any values in the measures are non-numeric, returns NaN.
 
 Computes the sum of the measure. However, if any of the values in the measures are non-numeric, this fills in the mean of the numeric values. For example, `sum_imputed(1, '', 3, 5)` is `12`.
 
-#### `imputed_fcatsion()`
+#### `imputed_fraction()`
 
 The fraction of the data that is non-zero and would have a value imputed for it. `imputed_fraction(1, '', 3, 5)` is 0.25.
 
