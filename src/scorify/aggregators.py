@@ -64,7 +64,9 @@ def to_f(val):
 
 
 def float_or_imputed(value, imputed_value):
-    return to_f(value) or imputed_value
+    if isfinite(value):
+        return to_f(value)
+    return imputed_value
 
 
 def numeric_only(values):

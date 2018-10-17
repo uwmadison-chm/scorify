@@ -48,7 +48,6 @@ def test_good_parsing():
     assert measures == ['foo']
 
 
-
 def test_bad_parses():
     with pytest.raises(aggregators.AggregatorError):
         aggregators.parse_expr("dkjaskdj")
@@ -102,8 +101,10 @@ def test_min():
 
 def test_mean_imputed():
     ar = [1, None, 3, 5]
-    ar_filtered = [a for a in ar if a]
-    assert aggregators.ag_mean_imputed(ar) == aggregators.ag_mean(ar_filtered)
+    imputed_mean = aggregators.ag_mean([1, 3, 3, 5])
+    assert aggregators.ag_mean_imputed(ar) == imputed_mean
+    ar_nan = [1, float('nan'), 3, 5]
+    assert aggregators.ag_mean_imputed(ar_nan) == imputed_mean
     assert math.isnan(aggregators.ag_mean_imputed([None, None]))
 
 
