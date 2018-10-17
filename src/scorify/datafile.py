@@ -54,7 +54,7 @@ class Datafile(object):
                 exclude = any([e.excludes(row) for e in exclusion_section])
             except KeyError as exc:
                 raise ExclusionError(
-                    "data columns", exc.message, self.data.header)
+                    "data columns", str(exc), self.data.header)
             if not exclude:
                 new_data.append(row)
         self.data = new_data

@@ -72,7 +72,7 @@ class Scorer(object):
                     sval = tx.transform(r[s.column])
                 except KeyError as err:
                     raise ScoringError(
-                        "data columns", err.message,
+                        "data columns", str(err),
                         datafile.header)
                 except ValueError:
                     sval = NaN
@@ -91,7 +91,7 @@ class Scorer(object):
                     cols = scored_data.columns_for(m.to_use)
                 except KeyError as exc:
                     raise AggregationError(
-                        "measures", exc.message, scored_data.known_measures())
+                        "measures", str(exc), scored_data.known_measures())
                 vals = [row[col] for col in cols]
                 try:
                     row[m.name] = m.agg_fx(vals)

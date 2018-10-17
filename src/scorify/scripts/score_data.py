@@ -67,7 +67,7 @@ def score_data(arguments):
     try:
         validated = validate_arguments(arguments)
     except SchemaError as e:
-        logging.error("Error: " + e.message)
+        logging.error("Error: " + str(e))
         sys.exit(1)
     if validated['--quiet']:
         logging.root.setLevel(logging.CRITICAL)
@@ -113,17 +113,17 @@ def score_data(arguments):
     except datafile.ExclusionError as err:
         logging.critical("Error in exclusions of {0}:".format(
             arguments['<scoresheet>']))
-        logging.critical(err.message)
+        logging.critical(err)
         sys.exit(1)
     except (scorer.ScoringError, scorer.TransformError) as err:
         logging.critical("Error in score of {0}:".format(
             arguments['<scoresheet>']))
-        logging.critical(err.message)
+        logging.critical(err)
         sys.exit(1)
     except scorer.AggregationError as err:
         logging.critical("Error in measures of {0}:".format(
             arguments['<scoresheet>']))
-        logging.critical(err.message)
+        logging.critical(err)
 
 
 def print_data(sd, nans_as, dialect):

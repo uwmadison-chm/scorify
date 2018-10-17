@@ -162,7 +162,7 @@ class Measure(object):
             self.to_use = to_use
 
         except aggregators.AggregatorError as exc:
-            raise DirectiveError(exc.message)
+            raise DirectiveError(str(exc))
 
         super(Measure, self).__init__()
 

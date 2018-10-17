@@ -72,7 +72,7 @@ class Reader(object):
                 mappings.MappingError
             ) as exc:
                 sheet.add_error("Line {0}: {1}".format(
-                    self.data.line_num, exc.message))
+                    self.data.line_num, str(message)))
         if not sheet.layout_section.is_valid():
             for err in sheet.layout_section.errors:
                 sheet.add_error(err)
