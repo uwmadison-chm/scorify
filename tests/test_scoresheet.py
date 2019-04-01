@@ -9,9 +9,9 @@ from scorify import scoresheet, directives
 
 @pytest.fixture
 def good_sample_csv():
-    import StringIO
+    import io
     import csv
-    return csv.reader(StringIO.StringIO("""
+    return csv.reader(io.StringIO("""
 layout,header
 layout,skip
  layout,data
