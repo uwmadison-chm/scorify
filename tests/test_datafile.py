@@ -17,6 +17,15 @@ def good_data():
         ['c', '5', '2', '1', '4', '3']
     ]
 
+@pytest.fixture
+def unicode_data():
+    return [
+        ['ppt', 'happy1', 'happy2', 'sad1', 'sad2', '🐢'],
+        ['skip', 'skip', 'skip', 'skip', 'skip', 'skip'],
+        ['🐙', '5', '2', '1', '4', '3'],
+        ['🌽', '2', '2', '1', '4', '3'],
+        ['🐢', '5', '2', '1', '4', '3']
+    ]
 
 @pytest.fixture
 def data_with_funny_lengths():
@@ -70,6 +79,16 @@ def test_read_populates_header_data(
     df.read()
     assert df.header == good_data[0]
     assert df.data[0] == dict(zip(df.header, good_data[2]))
+
+
+def test_read_deals_with_unicode(
+        unicode_data, layout_section_with_skip, empty_rename_section):
+    df = datafile.Datafile(
+        unicode_data, layout_section_with_skip, empty_rename_section)
+    df.read()
+    assert df.header == unicode_data[0]
+    assert df.data[0] == dict(zip(df.header, unicode_data[2]))
+    assert df.data[2]['ppt'] == '🐢'
 
 
 def test_read_handles_odd_lengths(

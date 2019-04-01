@@ -3,11 +3,11 @@
 Currently, this module is being converted to Python 3.
 
     virtualenv env/scorify
-    pip install -r requirements-dev.txt
+    pip3 install -r requirements-dev.txt
 
 ## Pytest
 
 To run tests, install the module locally and run pytest:
 
-    pip install --user . && pytest
+    pip3 install --user . && pytest
 
