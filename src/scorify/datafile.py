@@ -10,6 +10,7 @@ in a scoresheet.LayoutSection, which tells you where data and header sections
 are.
 """
 from __future__ import absolute_import
+import warnings
 
 from scorify.errors import HaystackError
 
@@ -37,6 +38,11 @@ class Datafile(object):
             if line_type == 'header':
                 self.header = [
                     self.rename_section.map_name(h.strip()) for h in line]
+                # Warn if header contains duplicates
+                seen_set = set()
+                duplicates = set(x for x in self.header if x in seen_set or seen_set.add(x))
+                if len(duplicates) > 0:
+                    warnings.warn("Duplicates in header: " + str(duplicates), UserWarning)
             else:
                 self.append_data(line)
 

@@ -35,6 +35,13 @@ def data_with_funny_lengths():
         [4]
     ]
 
+@pytest.fixture
+def data_with_duplicate_header():
+    return [
+        ['a', 'b', 'a'],
+        [1, 2, 3],
+        [4, 5, 6]
+    ]
 
 @pytest.fixture
 def empty_rename_section():
@@ -100,6 +107,18 @@ def test_read_handles_odd_lengths(
     df.read()
     assert len(df.data[0].values()) == len(df.header)
     assert len(df.data[1].values()) == len(df.header)
+
+
+def test_read_warns_on_ambiguous_columns_and_picks_last(
+        data_with_duplicate_header,
+        layout_section_no_skip,
+        empty_rename_section):
+    with pytest.warns(UserWarning):
+        df = datafile.Datafile(
+            data_with_duplicate_header, layout_section_no_skip, empty_rename_section)
+        df.read()
+        assert len(df.data[0].values()) == len(df.header) - 1
+        assert df.data[0]['a'] == 3
 
 
 def test_rename_changes_headers(
