@@ -60,7 +60,9 @@ To save the output if it looks good, just pipe it to a file:
 If some participant data is particularly messy, you can exclude it using your 
 scoresheet like this:
 
-| exclude | ppt_id_column_name  | 3001 |
+| A       | B                  | C    |
+| ---     | ---                | ---  |
+| exclude | ppt_id_column_name | 3001 |
 
 ## Scoresheet reference
 
