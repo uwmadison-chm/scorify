@@ -27,22 +27,22 @@ TODO: Actual example CSV goes here
 
 Create a scoresheet that looks like:
 
-| A         | B       | C            | D      |
-| ---       | ---     | ---          | ---    |
-| layout    | header  |              |        |
-| layout    | data    |              |        |
-|           |         |              |        |
-| transform | normal  | map(1:5,1:5) |        |
-| transform | reverse | map(1:5,5:1) |        |
-|           |         |              |        |
-| score     | ppt     |              |        |
-| score     | happy1  | happy        | normal |
-| score     | happy1  | happy        | normal |
-| score     | happy1  | happy        | normal |
-| score     | happy1  | happy        | normal |
-| score     | happy1  | happy        | normal |
-|           |         |              |        |
-| measure   | happy   | mean(happy)  |        |
+| A         | B       | C            | D       |
+| ---       | ---     | ---          | ---     |
+| layout    | header  |              |         |
+| layout    | data    |              |         |
+|           |         |              |         |
+| transform | normal  | map(1:5,1:5) |         |
+| transform | reverse | map(1:5,5:1) |         |
+|           |         |              |         |
+| score     | ppt     |              |         |
+| score     | happy1  | happy        | normal  |
+| score     | happy2  | happy        | normal  |
+| score     | happy3  | happy        | reverse |
+| score     | happy4  | happy        | normal  |
+| score     | happy5  | happy        | reverse |
+|           |         |              |         |
+| measure   | happy   | mean(happy)  |         |
 
 Then you call `score_data` with that scoresheet and datafile, like:
 
