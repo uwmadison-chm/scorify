@@ -27,6 +27,8 @@ TODO: Actual example CSV goes here
 
 Create a scoresheet that looks like:
 
+| A         | B       | C            | D      |
+| ---       | ---     | ---          | ---    |
 | layout    | header  |              |        |
 | layout    | data    |              |        |
 |           |         |              |        |
@@ -196,6 +198,8 @@ If a participant had `cats` for `likes_cats` and `horses` for `likes_horses`, yo
 
 If you take a scoresheet that looks like:
 
+| A         | B               | C                             | D       |
+| ---       | ---             | ---                           | ---     |
 | layout    | header          |                               |         |
 | layout    | data            |                               |         |
 |           |                 |                               |         |
@@ -217,12 +221,14 @@ If you take a scoresheet that looks like:
 and run it on data that looks like:
 
 | PPT_COL | EXTRA | HAPPY_Q1 | SAD_Q1 | HAPPY_Q2 |
+| ---     | ---   | ---      | ---    | ---      |
 | ppt1    | foo   | 4        | 2      | 2        |
 | ppt2    | bar   | 2        | 5      | 5        |
 
 ... you'll get output like:
 
 | PPT_COL | HAPPY_Q1: happy | SAD_Q1: sad | HAPPY_Q2: happy | happy_score | sad_score | happiness_ratio |
+| ---     | ---             | ---         | ---             | ---         | ---       | ---             | 
 | ppt1    | 4               | 2           | 3               | 3.5         | 2         | 1.75            |
 | ppt2    | 2               | 5           | 1               | 1.5         | 5         | 0.3             |
 
