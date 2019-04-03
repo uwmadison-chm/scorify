@@ -11,7 +11,7 @@ Directives define operations we'll be performing on our input data files.
 A scoresheet defines a set of directives; directive will be run on the input.
 
 Examples include:
-layout: Defines the header row and any rows we'll want to skip
+layout: Defines the header row and any rows we'll want to skip or keep
 
 exclude: Defines any rows we'll want to exclude from processing
 
@@ -45,7 +45,7 @@ class Layout(object):
 
     def __init__(self, info):
         info_lower = info.strip().lower()
-        if info_lower not in set(['header', 'data', 'skip']):
+        if info_lower not in set(['header', 'data', 'skip', 'keep']):
             raise DirectiveError(
                 "Didn't understand layout {0!r}".format(info))
 

@@ -18,12 +18,23 @@ scorify has no dependencies except Python 3.5 or greater. So:
 
 should have you set up.
 
+## Examples
+
+See [examples/](examples/) for some test files. To run the neurohack data and 
+scoresheet, do something like:
+
+    score_data neurohack_scoresheet.csv neurohack_April+2,+2019_11.05.csv
+
 ## Getting started
 
 Given an example CSV file, let's say you want to score 5 columns, the answers 
 can be 1 to 5, where the third and fifth are reversed.
 
-TODO: Actual example CSV goes here
+| ppt  | happy1 | happy2 | happy3 | happy4 | happy5 |
+| 3001 | 1      | 2      | 1      | 3      | 4      |
+| 3002 | 4      | 1      | 5      | 1      | 2      |
+| 3003 | 1      | 3      | 2      | 3      | 1      |
+| ...  |
 
 Create a scoresheet that looks like:
 

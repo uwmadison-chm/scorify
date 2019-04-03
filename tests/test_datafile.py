@@ -18,6 +18,17 @@ def good_data():
     ]
 
 @pytest.fixture
+def good_data_keep():
+    return [
+        ['ppt', 'happy1', 'happy2', 'sad1', 'sad2', 'extra'],
+        ['', 'How happy are you?', 'How happy were you before you started filling out paperwork?', 'How sad are you?', 'How sad is this data?', ''],
+        ['skip', 'skip', 'skip', 'skip', 'skip', 'skip'],
+        ['a', '5', '2', '1', '4', '3'],
+        ['b', '5', '2', '1', '4', '3'],
+        ['c', '5', '2', '1', '4', '3']
+    ]
+
+@pytest.fixture
 def unicode_data():
     return [
         ['ppt', 'happy1', 'happy2', 'sad1', 'sad2', '🐢'],
@@ -65,6 +76,16 @@ def layout_section_with_skip():
 
 
 @pytest.fixture
+def layout_section_with_skip_and_keep():
+    ls = scoresheet.LayoutSection()
+    ls.append_from_strings(['header'])
+    ls.append_from_strings(['keep'])
+    ls.append_from_strings(['skip'])
+    ls.append_from_strings(['data'])
+    return ls
+
+
+@pytest.fixture
 def layout_section_no_skip():
     ls = scoresheet.LayoutSection()
     ls.append_from_strings(['header'])
@@ -86,6 +107,18 @@ def test_read_populates_header_data(
     df.read()
     assert df.header == good_data[0]
     assert df.data[0] == dict(zip(df.header, good_data[2]))
+
+
+def test_read_populates_kept_data(
+        good_data_keep, layout_section_with_skip_and_keep, empty_rename_section):
+    df = datafile.Datafile(
+        good_data_keep, layout_section_with_skip_and_keep, empty_rename_section)
+    df.read()
+    assert df.header == good_data_keep[0]
+    assert df.keep[0]['ppt'] == ''
+    assert df.keep[0]['happy1'] == 'How happy are you?'
+    assert df.data[0]['ppt'] == 'a'
+    assert df.data[0]['happy1'] == '5'
 
 
 def test_read_deals_with_unicode(

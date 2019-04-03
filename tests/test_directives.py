@@ -19,6 +19,10 @@ def test_layout_accepts_header_skip_data():
     assert directives.Layout('SKIP')
 
 
+def test_layout_accepts_header_keep():
+    assert directives.Layout('keep')
+
+
 def test_transforming_works():
     tx = directives.Transform('', '')
     assert tx.transform(1) == 1

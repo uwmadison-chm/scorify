@@ -10,9 +10,10 @@ NaN = float('nan')
 
 
 class ScoredData(object):
-    def __init__(self, header=None, data=None, measure_columns=None):
+    def __init__(self, header=None, keep=None, data=None, measure_columns=None):
         self.header = header or []
         self.data = data or []
+        self.keep = keep or []
         self.measure_columns = measure_columns or defaultdict(list)
 
     def columns_for(self, measure_list):
@@ -56,6 +57,18 @@ class Scorer(object):
         out = ScoredData()
         out.header = [kls.score_name(d) for d in score_section.directives]
         out.measure_columns = kls.make_measure_columns(score_section)
+
+        for k in datafile.keep:
+            kept = {}
+            for d in score_section.directives:
+                name = kls.score_name(d)
+                try:
+                    kept[name] = k[d.column]
+                except KeyError as err:
+                    # No kept data for this column? No worries, just blank is fine
+                    kept[name] = ''
+
+            out.keep.append(kept)
 
         for r in datafile.data:
             scored = {}
