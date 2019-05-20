@@ -129,6 +129,9 @@ def score_data(arguments):
 def print_data(sd, nans_as, dialect):
     out = csv.writer(sys.stdout, dialect=dialect)
     out.writerow(sd.header)
+    for row in sd.keep:
+        rk = [row.get(h, '') for h in sd.header]
+        out.writerow(rk)
     for row in sd:
         rl = [pp(row[h], none_val=nans_as) for h in sd.header]
         out.writerow(rl)

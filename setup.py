@@ -28,5 +28,10 @@ setup(
         'console_scripts': [
             'score_data = scorify.scripts.score_data:main'
         ]
-    }
+    },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
 )

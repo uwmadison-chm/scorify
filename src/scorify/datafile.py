@@ -10,6 +10,7 @@ in a scoresheet.LayoutSection, which tells you where data and header sections
 are.
 """
 from __future__ import absolute_import
+import warnings
 
 from scorify.errors import HaystackError
 
@@ -20,15 +21,17 @@ class Datafile(object):
         self.layout_section = layout_section
         self.rename_section = rename_section
         self.header = []
+        self.keep = []
         self.data = []
         super(Datafile, self).__init__()
 
     def read(self):
         self.header = []
         self.data = []
+        self.keep = []
         for line_num, line in enumerate(self.lines):
             # Since we assume layout_section is valid, we only care about
-            # header and skip lines -- everything else must be data.
+            # header and skip and keep lines -- everything else must be data.
             line_type = ''
             if line_num < len(self.layout_section.directives):
                 line_type = self.layout_section.directives[line_num].info
@@ -37,15 +40,29 @@ class Datafile(object):
             if line_type == 'header':
                 self.header = [
                     self.rename_section.map_name(h.strip()) for h in line]
+                # Warn if header contains duplicates
+                seen_set = set()
+                duplicates = set(x for x in self.header if x in seen_set or seen_set.add(x))
+                if len(duplicates) > 0:
+                    warnings.warn("Duplicates in header: " + str(duplicates), UserWarning)
+            elif line_type == 'keep':
+                self.append_keep(line)
             else:
                 self.append_data(line)
 
-    def append_data(self, data):
+    def pad_data(self, data):
         # Force lines of funny length to be the header's length
         len_diff = len(self.header) - len(data)
         padding = [''] * len_diff
-        full_line = data + padding
+        return data + padding
+
+    def append_data(self, data):
+        full_line = self.pad_data(data)
         self.data.append(dict(zip(self.header, full_line)))
+
+    def append_keep(self, data):
+        full_line = self.pad_data(data)
+        self.keep.append(dict(zip(self.header, full_line)))
 
     def apply_exclusions(self, exclusion_section):
         new_data = []

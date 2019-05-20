@@ -121,7 +121,7 @@ class DiscreteMapping(Mapping):
     def from_string(kls, fx_string):
         def ues(s):
             # Unescapes strings -- will turn '\"' into '"'
-            return bytes(s).decode('unicode-escape')
+            return bytes(s, 'utf-8').decode('unicode_escape')
         # Python 2.7 has a sweet dict comprehension, but I'll keep 2.5 compat
         result = dict((
             (ues(match.group(1)), ues(match.group(2)))
