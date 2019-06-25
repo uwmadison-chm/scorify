@@ -20,6 +20,11 @@ setup(
             'score_data = scorify.scripts.score_data:main'
         ]
     },
+    install_requires=[
+        'docopt',
+        'schema',
+        'xlrd',
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -27,8 +27,8 @@ import csv
 import logging
 
 import scorify
-from scorify.vendor.docopt import docopt
-from scorify.vendor.schema import Schema, Use, Or, And, SchemaError
+from docopt import docopt
+from schema import Schema, Use, Or, And, SchemaError
 from scorify import scoresheet, datafile, scorer
 from scorify.utils import pp
 
