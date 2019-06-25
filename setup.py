@@ -4,26 +4,17 @@
 from setuptools import setup, find_packages
 import os
 
-
-def get_locals(filename):
-    l = {}
-    with open(filename, 'r') as f:
-        code = compile(f.read(), filename, 'exec')
-        exec(code, {}, l)
-    return l
-
-
-metadata = get_locals(os.path.join('src', 'scorify', '_metadata.py'))
+from xlrd.info import *
 
 setup(
     name="scorify",
-    version=metadata['version'],
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    author=metadata['author'],
-    author_email=metadata['author_email'],
-    license=metadata['license'],
-    url=metadata['url'],
+    version=version,
+    packages=['scorify'],
+    description = ('Library for scoring questionnaires'),
+    author=author,
+    author_email=author_email,
+    license=licence,
+    url=url,
     entry_points={
         'console_scripts': [
             'score_data = scorify.scripts.score_data:main'
@@ -33,5 +24,6 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
