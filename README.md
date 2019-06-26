@@ -247,10 +247,9 @@ and run it on data that looks like:
 
 ## Credits
 
-Scorify packages two excellent libraries: [docopt](https://github.com/docopt/docopt) and [schema](https://github.com/halst/schema).
+Scorify uses several excellent libraries: 
 
-docopt is copyright (c) 2013 Vladimir Keleshev, vladimir@keleshev.com
+* [docopt](https://github.com/docopt/docopt)
+* [schema](https://github.com/halst/schema)
+* [xlrd](https://github.com/python-excel/xlrd)
 
-schema is copyright (c) 2012 Vladimir Keleshev, vladimir@keleshev.com
-
-Hey, look at that! Same guy.
