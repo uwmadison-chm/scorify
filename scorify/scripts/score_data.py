@@ -16,6 +16,7 @@ Options:
   --nans-as=<string>   Print NaNs as this [default: NaN]
   --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
                        'excel-tab' [default: excel]
+  --output=<file>      An output file to write to [default: STDOUT]
   -q --quiet           Don't print errors
   -v, --verbose        Print extra debugging output
 """
@@ -25,6 +26,7 @@ import io
 import sys
 import csv
 import logging
+import xlrd
 
 import scorify
 from docopt import docopt
@@ -34,13 +36,14 @@ from scorify.utils import pp
 
 
 def open_for_read(fname):
-    return io.open(os.path.expanduser(fname), 'rU', encoding='utf-8-sig')
+    return io.open(os.path.expanduser(fname), 'r', encoding='utf-8-sig')
 
 
 def validate_arguments(arguments):
     s = Schema({
         '<scoresheet>': Use(open_for_read, error="Can't open scoresheet"),
         '<datafile>': Use(open_for_read, error="Can't open datafile"),
+        '--output': str,
         '--exclusions': Or(
             None, Use(open_for_read, error="Can't open exclusions")),
         '--dialect': And(
@@ -53,13 +56,19 @@ def validate_arguments(arguments):
     return s.validate(arguments)
 
 
+def parse_arguments(argv=None):
+    return docopt(
+        __doc__,
+        argv,
+        version="Scorify {0}".format(scorify.__version__))
+
 def main():
     logging.basicConfig(
         format="%(message)s", stream=sys.stderr, level=logging.INFO)
-    arguments = docopt(
-        __doc__,
-        version="Scorify {0}".format(scorify.__version__))
-    score_data(arguments)
+    score_data(parse_arguments())
+
+def main_test(test_args):
+    score_data(parse_arguments(test_args))
 
 
 def score_data(arguments):
@@ -108,7 +117,7 @@ def score_data(arguments):
         scored = scorer.Scorer.score(
             df, ss.transform_section, ss.score_section)
         scorer.Scorer.add_measures(scored, ss.measure_section)
-        print_data(scored, validated['--nans-as'], dialect)
+        print_data(arguments['--output'], scored, validated['--nans-as'], dialect)
 
     except datafile.ExclusionError as err:
         logging.critical("Error in exclusions of {0}:".format(
@@ -126,8 +135,13 @@ def score_data(arguments):
         logging.critical(err)
 
 
-def print_data(sd, nans_as, dialect):
-    out = csv.writer(sys.stdout, dialect=dialect)
+def print_data(output, sd, nans_as, dialect):
+    if output == "STDOUT":
+        out = csv.writer(sys.stdout, dialect=dialect)
+    else:
+        outfile = open(output, 'w')
+        out = csv.writer(outfile, dialect=dialect)
+
     out.writerow(sd.header)
     for row in sd.keep:
         rk = [row.get(h, '') for h in sd.header]
@@ -135,6 +149,7 @@ def print_data(sd, nans_as, dialect):
     for row in sd:
         rl = [pp(row[h], none_val=nans_as) for h in sd.header]
         out.writerow(rl)
+
 
 if __name__ == '__main__':
     main()

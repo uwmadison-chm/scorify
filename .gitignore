@@ -39,3 +39,6 @@ nosetests.xml
 
 # Hidden virtualenv
 .venv
+
+# Test output
+tests/output
