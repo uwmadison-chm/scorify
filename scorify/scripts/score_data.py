@@ -53,8 +53,16 @@ def validate_arguments(arguments):
         '--nans-as': str,
         str: object  # Ignore extras
     })
-    return s.validate(arguments)
-
+    try:
+        validated = s.validate(arguments)
+    except SchemaError as e:
+        logging.error("Error: " + str(e))
+        sys.exit(1)
+    if validated['--quiet']:
+        logging.root.setLevel(logging.CRITICAL)
+    if validated['--verbose']:
+        logging.root.setLevel(logging.DEBUG)
+    return validated
 
 def parse_arguments(argv=None):
     return docopt(
@@ -73,19 +81,12 @@ def main_test(test_args):
 
 def score_data(arguments):
     # This method is way too long, I know.
-    try:
-        validated = validate_arguments(arguments)
-    except SchemaError as e:
-        logging.error("Error: " + str(e))
-        sys.exit(1)
-    if validated['--quiet']:
-        logging.root.setLevel(logging.CRITICAL)
-    if validated['--verbose']:
-        logging.root.setLevel(logging.DEBUG)
+    validated = validate_arguments(arguments)
     logging.debug(validated)
     dialect = validated['--dialect']
     scoresheet_csv = csv.reader(validated['<scoresheet>'], dialect=dialect)
-    # First, read the scoresheet and exclusions (if any)
+
+    # First, read the scoresheet
     ss = scoresheet.Reader(scoresheet_csv).read_into_scoresheet()
     if ss.has_errors():
         logging.error("Errors in {0}:".format(arguments['<scoresheet>']))
@@ -93,18 +94,19 @@ def score_data(arguments):
             logging.error(err)
         sys.exit(1)
 
-    exc = None
+    # Load the data
+    datafile_csv = csv.reader(validated['<datafile>'], dialect=dialect)
+    df = datafile.Datafile(
+        datafile_csv, ss.layout_section, ss.rename_section)
+    df.read()
+
+    # Load and apply exclusions file
     if validated['--exclusions'] is not None:
         exclusions_csv = csv.reader(
             validated['--exclusions'],
             dialect=dialect)
         exc_ss = scoresheet.Reader(exclusions_csv).read_into_scoresheet()
         exc = exc_ss.exclude_section
-    datafile_csv = csv.reader(validated['<datafile>'], dialect=dialect)
-    df = datafile.Datafile(
-        datafile_csv, ss.layout_section, ss.rename_section)
-    df.read()
-    if exc is not None:
         try:
             df.apply_exclusions(exc)
         except datafile.ExclusionError as err:
@@ -112,8 +114,11 @@ def score_data(arguments):
                 arguments['--exclusions']))
             logging.critical(err)
             sys.exit(1)
+
     try:
+        # Apply excluses from scoresheet
         df.apply_exclusions(ss.exclude_section)
+        # Actual scoring!
         scored = scorer.Scorer.score(
             df, ss.transform_section, ss.score_section)
         scorer.Scorer.add_measures(scored, ss.measure_section)

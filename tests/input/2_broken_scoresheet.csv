@@ -1,0 +1,15 @@
+layout,header,
+layout,data,
+score,id,
+score,foo_a,foo
+score,foo_b,foo
+score,foo_c,foo
+score,foo_d,foo
+score,bar_a,bar
+score,bar_b,bar
+score,bar_c,bar
+score,bar_d,bar
+measure,foo_mean,mean_reputed(foo)
+measure,foo_meanImputedFraction,imputed_fraction(foo)
+measure,bar_sum,sum_imputed(bar)
+measure,bar_sumImputedFraction,imputed_fraction(bar)
