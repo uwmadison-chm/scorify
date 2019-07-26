@@ -75,19 +75,37 @@ scoresheet like this:
 | ---     | ---                | ---  |
 | exclude | ppt_id_column_name | 3001 |
 
+#### Keeping second row headers
+
+If your question headers have a second row with verbose question text in them, 
+you can keep that in the scored data by adding a `layout keep` instruction:
+
+    layout header
+    layout keep
+    layout data
+
+Repeat the layout keep instruction if you want to keep more than one row.
+
 ## Scoresheet reference
 
 The main input to scorify is a comma or tab-delimited "scoresheet" that has many rows and four columns. The first column tells what kind of command the row will be, and will be one of: `layout`, `exclude`, `transform`, `score`, or `measure`.
 
 ### layout
 
-The layout section tells scorify what your input data looks like. It must contain a `header` and `data`, but `skip` is also valid. `data` tells scorify that the rest of your input file is data. So:
+The layout section tells scorify what your input data looks like. It must contain a `header` and `data`, but `skip` and `keep` are also valid. `data` tells scorify that the rest of your input file is data. So:
 
     layout header
     layout skip
     layout data
 
 would tell scorify to expect a header row, skip a line, and then read the rest of the file as data.
+
+    layout header
+    layout keep
+    layout data
+
+would result in scorify expecting a header row, keeping the next line as-is, 
+and reading the rest of the file as data.
 
 ### rename
 
