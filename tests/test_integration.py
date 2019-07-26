@@ -3,6 +3,7 @@ from __future__ import absolute_import, division
 import pytest
 import os
 import xlrd
+import csv
 import warnings
 
 from .base import *
@@ -31,12 +32,19 @@ def run_excel_test(scoresheet, data, expected):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         run_score_data(scoresheet, data, expected)
 
-        # This is erroring out
-        e = xlrd.open_workbook(from_subdir("input", expected)).sheet_by_index(0)
-        a = xlrd.open_workbook(from_subdir("output", expected)).sheet_by_index(0)
+        with open(from_subdir("input", expected)) as ecsv:
+            e = csv.reader(ecsv)
+            elist = list(e)
 
-        assert e.nrows == a.nrows
-        # TODO
+        with open(from_subdir("output", expected)) as acsv:
+            a = csv.reader(acsv)
+            alist = list(a)
+
+        # Compare length
+        assert len(elist) == len(alist)
+        # Compare content
+        assert elist == alist
+
 
 
 def test_basic_integration():
@@ -48,11 +56,11 @@ def test_scoresheet_error():
         assert e.value.code == 1
 
 def test_excel_integration():
-    run_excel_test("003_scoresheet.xlsx", "003_data.xlsx", "003_expected.xlsx")
+    run_excel_test("003_scoresheet.xlsx", "003_data.xlsx", "003_expected.csv")
 
 def test_excel_integration_error():
     pytest.skip
     # Need to confirm that input with errors gets correctly handled in excel land
     with pytest.raises(SystemExit) as e:
-        run_excel_test("004_broken_scoresheet.xlsx", "003_data.xlsx", "003_expected.xlsx")
+        run_excel_test("004_broken_scoresheet.xlsx", "003_data.xlsx", "003_expected.csv")
         assert e.value.code == 1
