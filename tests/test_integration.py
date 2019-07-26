@@ -11,12 +11,15 @@ from scorify.scripts.score_data import main_test
 from scorify.scoresheet import SectionError
 from scorify.aggregators import AggregatorError
 
-def run_score_data(scoresheet, data, output):
-    main_test([
+def run_score_data(scoresheet, data, output, sheet=None):
+    args = [
         "--output=" + from_subdir("output", output),
         from_subdir("input", scoresheet),
         from_subdir("input", data)
-        ])
+        ]
+    if sheet:
+        args.append("--sheet={0}".format(sheet))
+    main_test(args)
 
 def run_test(scoresheet, data, expected):
     run_score_data(scoresheet, data, expected)
@@ -25,12 +28,12 @@ def run_test(scoresheet, data, expected):
     actual_content = open(from_subdir("output", expected)).read()
     assert actual_content == expected_content
 
-def run_excel_test(scoresheet, data, expected):
+def run_excel_test(scoresheet, data, expected, sheet=None):
     with warnings.catch_warnings():
         # Skip some xlrd deprecation warnings
         warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
-        run_score_data(scoresheet, data, expected)
+        run_score_data(scoresheet, data, expected, sheet=sheet)
 
         with open(from_subdir("input", expected)) as ecsv:
             e = csv.reader(ecsv)
@@ -57,6 +60,9 @@ def test_scoresheet_error():
 
 def test_excel_integration():
     run_excel_test("003_scoresheet.xlsx", "003_data.xlsx", "003_expected.csv")
+
+def test_excel_specific_sheet():
+    run_excel_test("003_scoresheet.xlsx", "003_data.xlsx", "004_expected.csv", 1)
 
 def test_excel_integration_error():
     pytest.skip

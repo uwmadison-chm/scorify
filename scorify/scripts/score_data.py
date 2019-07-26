@@ -13,6 +13,8 @@ Options:
   -h --help            Show this screen
   --version            Show version
   --exclusions=<file>  A scoresheet with additional exclude commands
+  --sheet=<num>        If using an Excel datafile as input, what sheet 
+                       should we use? Indexed from 0. [default: 0]
   --nans-as=<string>   Print NaNs as this [default: NaN]
   --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
                        'excel-tab' [default: excel]
@@ -44,6 +46,7 @@ def validate_arguments(arguments):
     s = Schema({
         '<scoresheet>': Use(open_for_read, error="Can't open scoresheet"),
         '<datafile>': Use(open_for_read, error="Can't open datafile"),
+        '--sheet': Use(int),
         '--output': str,
         '--exclusions': Or(
             None, Use(open_for_read, error="Can't open exclusions")),
@@ -80,10 +83,10 @@ def main_test(test_args):
     score_data(parse_arguments(test_args))
 
 
-def read_data(thing, dialect):
+def read_data(thing, dialect, sheet_number=0):
     if thing.name.endswith("xls") or thing.name.endswith("xlsx"):
         workbook = xlrd.open_workbook(thing.name)
-        s = workbook.sheet_by_index(0)
+        s = workbook.sheet_by_index(sheet_number)
         return ExcelReader(s)
 
     else:
@@ -105,7 +108,7 @@ def score_data(arguments):
         sys.exit(1)
 
     # Load the data
-    datafile_data = read_data(validated['<datafile>'], dialect=dialect)
+    datafile_data = read_data(validated['<datafile>'], dialect=dialect, sheet_number=validated['--sheet'])
     df = datafile.Datafile(
         datafile_data, ss.layout_section, ss.rename_section)
     df.read()
