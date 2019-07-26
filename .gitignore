@@ -42,3 +42,6 @@ nosetests.xml
 
 # Test output
 tests/output
+
+# Dumb libreoffice temp files
+*.xlsx#

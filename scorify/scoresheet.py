@@ -28,7 +28,7 @@ class Reader(object):
     def __init__(self, data=None):
         """
         data should be a csv.Reader-like object. Notably, it should be
-        iterable, return a list per iteration, and support line_number.
+        iterable, return a list per iteration, and support line_num.
         """
         self.data = data
 
@@ -72,7 +72,7 @@ class Reader(object):
                 mappings.MappingError
             ) as exc:
                 sheet.add_error("Line {0}: {1}".format(
-                    self.data.line_num, str(message)))
+                    self.data.line_num, str(exc)))
         if not sheet.layout_section.is_valid():
             for err in sheet.layout_section.errors:
                 sheet.add_error(err)

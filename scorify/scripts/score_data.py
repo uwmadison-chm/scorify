@@ -24,15 +24,16 @@ Options:
 import os
 import io
 import sys
-import csv
 import logging
+import csv
 import xlrd
 
 import scorify
 from docopt import docopt
 from schema import Schema, Use, Or, And, SchemaError
-from scorify import scoresheet, datafile, scorer
+from scorify import scoresheet, datafile, scorer 
 from scorify.utils import pp
+from scorify.excel_reader import ExcelReader
 
 
 def open_for_read(fname):
@@ -79,15 +80,24 @@ def main_test(test_args):
     score_data(parse_arguments(test_args))
 
 
+def read_data(thing, dialect):
+    if thing.name.endswith("xls") or thing.name.endswith("xlsx"):
+        workbook = xlrd.open_workbook(thing.name)
+        s = workbook.sheet_by_index(0)
+        return ExcelReader(s)
+
+    else:
+        return csv.reader(thing, dialect=dialect)
+
 def score_data(arguments):
     # This method is way too long, I know.
     validated = validate_arguments(arguments)
     logging.debug(validated)
     dialect = validated['--dialect']
-    scoresheet_csv = csv.reader(validated['<scoresheet>'], dialect=dialect)
+    scoresheet_data = read_data(validated['<scoresheet>'], dialect=dialect)
 
     # First, read the scoresheet
-    ss = scoresheet.Reader(scoresheet_csv).read_into_scoresheet()
+    ss = scoresheet.Reader(scoresheet_data).read_into_scoresheet()
     if ss.has_errors():
         logging.error("Errors in {0}:".format(arguments['<scoresheet>']))
         for err in ss.errors:
@@ -95,17 +105,17 @@ def score_data(arguments):
         sys.exit(1)
 
     # Load the data
-    datafile_csv = csv.reader(validated['<datafile>'], dialect=dialect)
+    datafile_data = read_data(validated['<datafile>'], dialect=dialect)
     df = datafile.Datafile(
-        datafile_csv, ss.layout_section, ss.rename_section)
+        datafile_data, ss.layout_section, ss.rename_section)
     df.read()
 
     # Load and apply exclusions file
     if validated['--exclusions'] is not None:
-        exclusions_csv = csv.reader(
+        exclusions_data = read_data(
             validated['--exclusions'],
             dialect=dialect)
-        exc_ss = scoresheet.Reader(exclusions_csv).read_into_scoresheet()
+        exc_ss = scoresheet.Reader(exclusions_data).read_into_scoresheet()
         exc = exc_ss.exclude_section
         try:
             df.apply_exclusions(exc)
@@ -116,7 +126,7 @@ def score_data(arguments):
             sys.exit(1)
 
     try:
-        # Apply excluses from scoresheet
+        # Apply exclusions from scoresheet
         df.apply_exclusions(ss.exclude_section)
         # Actual scoring!
         scored = scorer.Scorer.score(
@@ -138,6 +148,7 @@ def score_data(arguments):
         logging.critical("Error in measures of {0}:".format(
             arguments['<scoresheet>']))
         logging.critical(err)
+        sys.exit(1)
 
 
 def print_data(output, sd, nans_as, dialect):
