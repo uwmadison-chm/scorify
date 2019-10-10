@@ -242,8 +242,8 @@ If you take a scoresheet that looks like:
 |           |                 |                               |         |
 | score     | PPT_COL         |                               |         |
 | score     | HAPPY_Q1        | happy                         | normal  |
-| score     | SAD_Q1          | happy                         | reverse  |
-| score     | HAPPY_Q2        | happy                         | normal |
+| score     | SAD_Q1          | happy                         | normal  |
+| score     | HAPPY_Q2        | happy                         | reverse |
 |           |                 |                               |         |
 | measure   | happy_score     | mean(happy)                   |         |
 | measure   | sad_score       | mean(sad)                     |         |
