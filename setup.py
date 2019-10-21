@@ -12,7 +12,7 @@ setup(
     author='Nate Vack',
     author_email='njvack@wisc.edu',
     license='MIT',
-    url=url,
+    url='https://github.com/uwmadison-chm/scorify/',
     entry_points={
         'console_scripts': [
             'score_data = scorify.scripts.score_data:main'
