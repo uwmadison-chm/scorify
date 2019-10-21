@@ -4,16 +4,14 @@
 from setuptools import setup, find_packages
 import os
 
-from xlrd.info import *
-
 setup(
     name="scorify",
     version=version,
     packages=['scorify'],
     description = ('Library for scoring questionnaires'),
-    author=author,
-    author_email=author_email,
-    license=licence,
+    author='Nate Vack',
+    author_email='njvack@wisc.edu',
+    license='MIT',
     url=url,
     entry_points={
         'console_scripts': [
