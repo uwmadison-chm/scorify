@@ -6,7 +6,7 @@ import os
 
 setup(
     name="scorify",
-    version=version,
+    version='0.9.1',
     packages=['scorify'],
     description = ('Library for scoring questionnaires'),
     author='Nate Vack',
