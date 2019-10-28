@@ -15,7 +15,7 @@ setup(
     url='https://github.com/uwmadison-chm/scorify/',
     entry_points={
         'console_scripts': [
-            'score_data = scorify.scripts.score_data:main'
+            'score_data = scorify.score_data:main'
         ]
     },
     install_requires=[
