@@ -16,5 +16,6 @@ class ExcelReader():
         self.line_num += 1
         if self.line_num >= self.sheet.max_row:
             raise StopIteration()
-        return next(self.iterator)
+        # list, because openpyxl seems to build a tuple
+        return list(next(self.iterator))
 

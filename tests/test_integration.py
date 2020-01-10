@@ -2,7 +2,7 @@ from __future__ import absolute_import, division
 
 import pytest
 import os
-import xlrd
+import openpyxl
 import csv
 import warnings
 
@@ -29,24 +29,20 @@ def run_test(scoresheet, data, expected):
     assert actual_content == expected_content
 
 def run_excel_test(scoresheet, data, expected, sheet=None):
-    with warnings.catch_warnings():
-        # Skip some xlrd deprecation warnings
-        warnings.filterwarnings("ignore", category=PendingDeprecationWarning)
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-        run_score_data(scoresheet, data, expected, sheet=sheet)
+    run_score_data(scoresheet, data, expected, sheet=sheet)
 
-        with open(from_subdir("input", expected)) as ecsv:
-            e = csv.reader(ecsv)
-            elist = list(e)
+    with open(from_subdir("input", expected)) as ecsv:
+        e = csv.reader(ecsv)
+        elist = list(e)
 
-        with open(from_subdir("output", expected)) as acsv:
-            a = csv.reader(acsv)
-            alist = list(a)
+    with open(from_subdir("output", expected)) as acsv:
+        a = csv.reader(acsv)
+        alist = list(a)
 
-        # Compare length
-        assert len(elist) == len(alist)
-        # Compare content
-        assert elist == alist
+    # Compare length
+    assert len(elist) == len(alist)
+    # Compare content
+    assert elist == alist
 
 
 
