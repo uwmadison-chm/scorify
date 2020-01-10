@@ -28,7 +28,7 @@ import io
 import sys
 import logging
 import csv
-import xlrd
+import openpyxl
 
 import scorify
 from docopt import docopt
@@ -85,8 +85,8 @@ def main_test(test_args):
 
 def read_data(thing, dialect, sheet_number=0):
     if thing.name.endswith("xls") or thing.name.endswith("xlsx"):
-        workbook = xlrd.open_workbook(thing.name)
-        s = workbook.sheet_by_index(sheet_number)
+        wb = openpyxl.load_workbook(thing.name)
+        s = wb[wb.sheetnames[sheet_number]]
         return ExcelReader(s)
 
     else:
