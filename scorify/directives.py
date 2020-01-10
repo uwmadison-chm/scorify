@@ -129,19 +129,23 @@ class Score(object):
     to specify what measure the column is used in and what transform should
     be applied to it. Examples:
 
-    score PARTICIPANT
-    score DATA_COL_1 MEASURE_1 normal
-    score DATA_COL_2 MEASURE_1 reverse
-
+        score PARTICIPANT
+        score DATA_COL_1 MEASURE_1 normal
+        score DATA_COL_2 MEASURE_1 reverse
 
     If the measure name is blank, the column doesn't get added to any measure.
     If the transform is blank, the data is copied without any changes.
+
+    The fifth column is an optional name, for example
+
+        score DATA_COLUMN MEASURE_1 reverse AwesomeReversed
     """
 
-    def __init__(self, column, measure_name, transform=None):
+    def __init__(self, column, measure_name, transform=None, output_name=None):
         self.column = column
         self.measure_name = measure_name
         self.transform = transform
+        self.output_name = output_name
         super(Score, self).__init__()
 
 

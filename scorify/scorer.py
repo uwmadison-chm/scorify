@@ -40,6 +40,8 @@ class ScoredData(object):
 class Scorer(object):
     @classmethod
     def score_name(kls, directive):
+        if directive.output_name:
+            return directive.output_name
         name = directive.column
         if directive.measure_name != "None" and len(directive.measure_name) > 0:
             name += ': ' + directive.measure_name
@@ -77,7 +79,7 @@ class Scorer(object):
                     tx = transform_section[s.transform]
                 except KeyError as exc:
                     raise TransformError(
-                        "transforms", exc.message,
+                        "transforms", "Key not found: " + s.transform,
                         transform_section.known_transforms())
 
                 name = kls.score_name(s)

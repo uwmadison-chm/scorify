@@ -35,6 +35,14 @@ def scores_2():
 
 
 @pytest.fixture
+def scores_3():
+    ss = scoresheet.ScoreSection()
+    ss.append_from_strings(['happy1', 'happy', '', 'KINDA HAPPY'])
+    ss.append_from_strings(['happy2', 'happy', '-', 'VERY HAPPY'])
+    return ss
+
+
+@pytest.fixture
 def gender_score():
     ss = scoresheet.ScoreSection()
     ss.append_from_strings(['gender1', 'gender', 'gmap'])
@@ -117,6 +125,14 @@ def test_scorer_scores(data_1, transforms, scores_1):
     d = res.data[0]
     assert d['happy1: happy'] == '5'
     assert d['happy2: happy'] == 4
+
+def test_scorer_renames(data_1, transforms, scores_3):
+    res = scorer.Scorer.score(data_1, transforms, scores_3)
+    assert res.header == ['KINDA HAPPY', 'VERY HAPPY']
+    d = res.data[0]
+    assert d['KINDA HAPPY'] == '5'
+    assert d['VERY HAPPY'] == 4
+
 
 
 def test_scorer_assigns_nan_on_bad_score(data_with_bad, transforms, scores_1):
