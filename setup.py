@@ -21,7 +21,7 @@ setup(
     install_requires=[
         'docopt',
         'schema',
-        'xlrd',
+        'openpyxl',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

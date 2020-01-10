@@ -2,4 +2,4 @@ pytest
 IPython
 docopt
 schema
-xlrd
+openpyxl

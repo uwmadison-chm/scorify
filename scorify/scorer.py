@@ -41,7 +41,7 @@ class Scorer(object):
     @classmethod
     def score_name(kls, directive):
         name = directive.column
-        if len(directive.measure_name) > 0:
+        if directive.measure_name != "None" and len(directive.measure_name) > 0:
             name += ': ' + directive.measure_name
         return name
 
