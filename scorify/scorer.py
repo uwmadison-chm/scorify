@@ -45,6 +45,8 @@ class Scorer(object):
         name = directive.column
         if directive.measure_name != "None" and len(directive.measure_name) > 0:
             name += ': ' + directive.measure_name
+        if len(directive.transform) > 0:
+            name += ': ' + directive.transform
         return name
 
     @classmethod
