@@ -269,5 +269,5 @@ Scorify uses several excellent libraries:
 
 * [docopt](https://github.com/docopt/docopt)
 * [schema](https://github.com/halst/schema)
-* [xlrd](https://github.com/python-excel/xlrd)
+* [openpyxl](https://openpyxl.readthedocs.io/)
 
