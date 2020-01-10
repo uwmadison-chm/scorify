@@ -9,6 +9,7 @@ class ExcelReader():
         self.line_num = -1
         self.iterator = sheet.iter_rows(values_only=True)
 
+
     def __iter__(self):
         return self
 
@@ -16,6 +17,12 @@ class ExcelReader():
         self.line_num += 1
         if self.line_num >= self.sheet.max_row:
             raise StopIteration()
+
+        def xstr(s):
+            if s is None:
+                return ''
+            return str(s)
+
         # list, because openpyxl seems to build a tuple
-        return list(next(self.iterator))
+        return list(map(xstr, next(self.iterator)))
 
