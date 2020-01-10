@@ -11,7 +11,7 @@ from scorify import datafile, scoresheet, scorer
 @pytest.fixture
 def transforms():
     ts = scoresheet.TransformSection()
-    ts.append_from_strings(['-', 'map(1:5,5:1)'])
+    ts.append_from_strings(['reverse', 'map(1:5,5:1)'])
     ts.append_from_strings(['gmap', 'discrete_map("1": "f", "2": "m")'])
     return ts
 
@@ -20,7 +20,7 @@ def transforms():
 def scores_1():
     ss = scoresheet.ScoreSection()
     ss.append_from_strings(['happy1', 'happy'])
-    ss.append_from_strings(['happy2', 'happy', '-'])
+    ss.append_from_strings(['happy2', 'happy', 'reverse'])
     return ss
 
 
@@ -28,9 +28,17 @@ def scores_1():
 def scores_2():
     ss = scoresheet.ScoreSection()
     ss.append_from_strings(['happy1', 'happy'])
-    ss.append_from_strings(['happy2', 'happy', '-'])
+    ss.append_from_strings(['happy2', 'happy', 'reverse'])
     ss.append_from_strings(['sad1', 'sad'])
-    ss.append_from_strings(['sad2', 'sad', '-'])
+    ss.append_from_strings(['sad2', 'sad', 'reverse'])
+    return ss
+
+
+@pytest.fixture
+def scores_3():
+    ss = scoresheet.ScoreSection()
+    ss.append_from_strings(['happy1', 'happy', '', 'KINDA HAPPY'])
+    ss.append_from_strings(['happy2', 'happy', 'reverse', 'VERY HAPPY'])
     return ss
 
 
@@ -113,22 +121,30 @@ def scored_data_2(data_1, transforms, scores_2):
 
 def test_scorer_scores(data_1, transforms, scores_1):
     res = scorer.Scorer.score(data_1, transforms, scores_1)
-    assert res.header == ['happy1: happy', 'happy2: happy']
+    assert res.header == ['happy1: happy', 'happy2: happy: reverse']
     d = res.data[0]
     assert d['happy1: happy'] == '5'
-    assert d['happy2: happy'] == 4
+    assert d['happy2: happy: reverse'] == 4
+
+
+def test_scorer_renames(data_1, transforms, scores_3):
+    res = scorer.Scorer.score(data_1, transforms, scores_3)
+    assert res.header == ['KINDA HAPPY', 'VERY HAPPY']
+    d = res.data[0]
+    assert d['KINDA HAPPY'] == '5'
+    assert d['VERY HAPPY'] == 4
 
 
 def test_scorer_assigns_nan_on_bad_score(data_with_bad, transforms, scores_1):
     res = scorer.Scorer.score(data_with_bad, transforms, scores_1)
     d = res.data[0]
-    assert math.isnan(d['happy2: happy'])
+    assert math.isnan(d['happy2: happy: reverse'])
 
 
 def test_scorer_measures(scored_data_1, measures_1):
-    assert scored_data_1.header == ['happy1: happy', 'happy2: happy']
+    assert scored_data_1.header == ['happy1: happy', 'happy2: happy: reverse']
     scorer.Scorer.add_measures(scored_data_1, measures_1)
-    assert scored_data_1.header == ['happy1: happy', 'happy2: happy', 'happy']
+    assert scored_data_1.header == ['happy1: happy', 'happy2: happy: reverse', 'happy']
     assert scored_data_1.data[0]['happy'] == 4.5
 
 
@@ -158,8 +174,8 @@ def test_scorer_assigns_nan_on_bad_measure(bad_scored, measures_1):
 def test_scorer_does_discrete_mappings(data_1, transforms, gender_score):
     res = scorer.Scorer.score(data_1, transforms, gender_score)
 
-    assert res.data[0]['gender1: gender'] == 'f'
-    assert res.data[1]['gender1: gender'] == ''
+    assert res.data[0]['gender1: gender: gmap'] == 'f'
+    assert res.data[1]['gender1: gender: gmap'] == ''
 
 
 def test_measures_multi_names(scored_data_2, measures_2):

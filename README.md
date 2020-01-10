@@ -167,6 +167,10 @@ The score section is where you tell scorify which columns you want in your outpu
 
     score happy_1 happy reverse
 
+You can optionally pass a 5th value, which will define the output column name:
+
+    score happy_1 happy reverse ReverseHappy1
+
 ### measure
 
 The measure section computes aggregate measures of your scored data. These lines look like:

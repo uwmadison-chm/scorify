@@ -66,3 +66,6 @@ def test_excel_integration_error():
     with pytest.raises(SystemExit) as e:
         run_excel_test("004_broken_scoresheet.xlsx", "003_data.xlsx", "003_expected.csv")
         assert e.value.code == 1
+
+def test_score_column_names():
+    run_test("005_scoresheet.csv", "005_data.csv", "005_expected.csv")

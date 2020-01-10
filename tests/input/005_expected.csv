@@ -1,0 +1,4 @@
+id,DIFFERENT_NAME,foo_b: foo: reverse,foo_c: foo,foo_d: foo,bar_a: bar,bar_b: bar,bar_c: bar,bar_d: bar,foo_mean,foo_meanImputedFraction,bar_sum,bar_sumImputedFraction
+1,0,2,4,skipped,4,skipped,3,5,2,0.25,16,0.25
+2,5,2,5,3,5,1,6,1,3.75,0,13,0
+3,NaN,NaN,,,,,4,,NaN,1,16,0.75

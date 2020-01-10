@@ -230,13 +230,16 @@ class ScoreSection(Section):
         col_name = string_list[0]
         measure_name = ''
         transform = ''
+        output_name = None
         if len(string_list) > 1:
             measure_name = string_list[1]
         if len(string_list) > 2:
             transform = string_list[2]
+        if len(string_list) > 3:
+            output_name = string_list[3]
 
         self.append_directive(
-            directives.Score(col_name, measure_name, transform))
+            directives.Score(col_name, measure_name, transform, output_name))
 
     def append_directive(self, directive):
         column = directive.column
