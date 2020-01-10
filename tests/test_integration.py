@@ -7,7 +7,7 @@ import csv
 import warnings
 
 from .base import *
-from scorify.scripts.score_data import main_test
+from scorify.score_data import main_test
 from scorify.scoresheet import SectionError
 from scorify.aggregators import AggregatorError
 
