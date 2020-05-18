@@ -1,32 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+SETUP_REQUIRES = ['setuptools >= 30.3.0']
+SETUP_REQUIRES += ['wheel'] if 'bdist_wheel' in sys.argv else []
+
 from setuptools import setup, find_packages
-import os
+from pathlib import Path
+
+def get_locals(filename):
+    l = {}
+    exec(open(filename, 'r').read(), {}, l)
+    return l
+
+
+info = get_locals(Path('scorify/info.py'))
 
 setup(
     name="scorify",
-    version='0.9.1',
-    packages=['scorify'],
-    description = ('Library for scoring questionnaires'),
-    author='Nate Vack',
-    author_email='njvack@wisc.edu',
-    license='MIT',
-    url='https://github.com/uwmadison-chm/scorify/',
-    entry_points={
-        'console_scripts': [
-            'score_data = scorify.score_data:main'
-        ]
-    },
-    install_requires=[
-        'docopt',
-        'schema',
-        'openpyxl',
-    ],
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        'Topic :: Software Development :: Libraries :: Python Modules',
-    ],
+    setup_requires=SETUP_REQUIRES,
+    version=info['version'],
+    packages=find_packages()
 )
