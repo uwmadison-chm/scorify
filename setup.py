@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from setuptools import setup, find_packages
+import sys
+from pathlib import Path
+
 SETUP_REQUIRES = ['setuptools >= 30.3.0']
 SETUP_REQUIRES += ['wheel'] if 'bdist_wheel' in sys.argv else []
 
-from setuptools import setup, find_packages
-from pathlib import Path
 
 def get_locals(filename):
     l = {}
