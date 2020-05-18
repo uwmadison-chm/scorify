@@ -12,22 +12,22 @@ Scorify aims to fix this.
 
 ## Installation
 
-scorify has no dependencies except Python 3.5 or greater. So:
+scorify requires Python 3.5.
 
-    pip3 install scorify
+    pip install scorify
 
 should have you set up.
 
 ## Examples
 
-See [examples/](examples/) for some test files. To run the neurohack data and 
+See [examples/](examples/) for some test files. To run the neurohack data and
 scoresheet, do something like:
 
     score_data neurohack_scoresheet.csv neurohack_April+2,+2019_11.05.csv
 
 ## Getting started
 
-Given an example CSV file, let's say you want to score 5 columns, the answers 
+Given an example CSV file, let's say you want to score 5 columns, the answers
 can be 1 to 5, where the third and fifth are reversed.
 
 | ppt  | happy1 | happy2 | happy3 | happy4 | happy5 |
@@ -68,7 +68,7 @@ To save the output if it looks good, just pipe it to a file:
 
 #### Excluding participants
 
-If some participant data is particularly messy, you can exclude it using your 
+If some participant data is particularly messy, you can exclude it using your
 scoresheet like this:
 
 | A       | B                  | C    |
@@ -77,7 +77,7 @@ scoresheet like this:
 
 #### Keeping second row headers
 
-If your question headers have a second row with verbose question text in them, 
+If your question headers have a second row with verbose question text in them,
 you can keep that in the scored data by adding a `layout keep` instruction:
 
     layout header
@@ -104,7 +104,7 @@ would tell scorify to expect a header row, skip a line, and then read the rest o
     layout keep
     layout data
 
-would result in scorify expecting a header row, keeping the next line as-is, 
+would result in scorify expecting a header row, keeping the next line as-is,
 and reading the rest of the file as data.
 
 ### rename
@@ -263,13 +263,13 @@ and run it on data that looks like:
 ... you'll get output like:
 
 | PPT_COL | HAPPY_Q1: happy | SAD_Q1: sad | HAPPY_Q2: happy | happy_score | sad_score | happiness_ratio |
-| ---     | ---             | ---         | ---             | ---         | ---       | ---             | 
+| ---     | ---             | ---         | ---             | ---         | ---       | ---             |
 | ppt1    | 4               | 2           | 3               | 3.5         | 2         | 1.75            |
 | ppt2    | 2               | 5           | 1               | 1.5         | 5         | 0.3             |
 
 ## Credits
 
-Scorify uses several excellent libraries: 
+Scorify uses several excellent libraries:
 
 * [docopt](https://github.com/docopt/docopt)
 * [schema](https://github.com/halst/schema)

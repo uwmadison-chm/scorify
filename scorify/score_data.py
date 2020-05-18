@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright 2014 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
 
 """Score questionnaire responses.
 
@@ -13,7 +13,7 @@ Options:
   -h --help            Show this screen
   --version            Show version
   --exclusions=<file>  A scoresheet with additional exclude commands
-  --sheet=<num>        If using an Excel datafile as input, what sheet 
+  --sheet=<num>        If using an Excel datafile as input, what sheet
                        should we use? Indexed from 0. [default: 0]
   --nans-as=<string>   Print NaNs as this [default: NaN]
   --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
@@ -33,7 +33,7 @@ import openpyxl
 import scorify
 from docopt import docopt
 from schema import Schema, Use, Or, And, SchemaError
-from scorify import scoresheet, datafile, scorer 
+from scorify import scoresheet, datafile, scorer
 from scorify.utils import pp
 from scorify.excel_reader import ExcelReader
 

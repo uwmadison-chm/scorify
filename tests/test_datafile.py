@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright 2014 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
 
 import pytest
 
