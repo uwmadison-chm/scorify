@@ -3,19 +3,19 @@
 
 from setuptools import setup, find_packages
 import sys
-from pathlib import Path
+from os import path
 
 SETUP_REQUIRES = ['setuptools >= 30.3.0']
 SETUP_REQUIRES += ['wheel'] if 'bdist_wheel' in sys.argv else []
 
 
 def get_locals(filename):
-    l = {}
-    exec(open(filename, 'r').read(), {}, l)
-    return l
+    local_vars = {}
+    exec(open(filename, 'r').read(), {}, local_vars)
+    return local_vars
 
 
-info = get_locals(Path('scorify/info.py'))
+info = get_locals(path.join('scorify', 'info.py'))
 
 setup(
     name="scorify",
