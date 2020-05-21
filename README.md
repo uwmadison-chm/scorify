@@ -1,6 +1,6 @@
-# Welcome to the scorify project
+# Scorify: A simple tool for scoring psychological self-report questionnaires.
 
-A simple tool for scoring psychological self-report questionnaires.
+[![DOI](https://zenodo.org/badge/16382827.svg)](https://zenodo.org/badge/latestdoi/16382827)
 
 ## Background
 
