@@ -41,10 +41,11 @@ class Datafile(object):
                 self.header = [
                     self.rename_section.map_name(h.strip()) for h in line]
                 # Warn if header contains duplicates
-                seen_set = set()
-                duplicates = set(x for x in self.header if x in seen_set or seen_set.add(x))
+                # Don't warn if there's a duplicate blank header, which we see from Excel input sometimes
+                seen = set()
+                duplicates = set(x for x in self.header if x in seen or (x != '' and seen.add(x)))
                 if len(duplicates) > 0:
-                    warnings.warn("Duplicates in header: " + str(duplicates), UserWarning)
+                    warnings.warn(f"Duplicates {duplicates} in header {self.header}", UserWarning)
             elif line_type == 'keep':
                 self.append_keep(line)
             else:
