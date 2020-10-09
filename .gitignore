@@ -46,3 +46,6 @@ tests/output
 
 # Dumb libreoffice temp files
 *.xlsx#
+
+# Don't need to track editor stuff
+.nova
