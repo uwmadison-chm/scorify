@@ -3,9 +3,10 @@
 # Copyright (c) 2020 Board of Regents of the University of Wisconsin System
 
 """
-Aggregators are functions that consense sets of numbers into single ones.
+Aggregators are functions that condense sets of numbers into single ones.
 They're used by measure directives.
 """
+
 from __future__ import absolute_import, division
 
 import math
