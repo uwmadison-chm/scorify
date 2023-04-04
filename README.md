@@ -34,7 +34,7 @@ can be 1 to 5, where the third and fifth are reversed.
 | 3001 | 1      | 2      | 1      | 3      | 4      |
 | 3002 | 4      | 1      | 5      | 1      | 2      |
 | 3003 | 1      | 3      | 2      | 3      | 1      |
-| ...  |
+| ...  | ...    | ...    | ...    | ...    | ...    |
 
 Create a scoresheet that looks like:
 
