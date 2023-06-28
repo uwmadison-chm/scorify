@@ -10,6 +10,10 @@ Scoring these files is a bunch of work. Oftentimes, many questionnaires (or sub-
 
 Scorify aims to fix this.
 
+## Try scorify on the web!
+
+If you want to build an automatic pipeline to score your data, you'll want the python version of the tool. But if you just want to give it a try in your browser, [try our web-based tool!](http://scorify-web.glitch.me)
+
 ## Installation
 
 scorify requires Python 3.5.
@@ -269,6 +273,8 @@ and run it on data that looks like:
 | ppt2    | 2               | 5           | 1               | 1.5         | 5         | 0.3             |
 
 ## Credits
+
+Scorify was written by Nate Vack <njvack@wisc.edu> and Dan Fitch <dfitch@wisce.du>. Scorify is copyright 2023 by the Boards of Regents of the University of Wisconsin System.
 
 Scorify uses several excellent libraries:
 
