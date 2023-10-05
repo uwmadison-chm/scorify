@@ -19,7 +19,7 @@ transform: Shortcut names that define mappings
 
 score: A column, a classification for the column, and the transform to run
 
-measure: How to aggregate scored columns into directly-usable measurements
+aggregator: How to aggregate scored columns into directly-usable measurements
 """
 
 
@@ -149,7 +149,7 @@ class Score(object):
         super(Score, self).__init__()
 
 
-class Measure(object):
+class Aggregator(object):
     """
     Defines an aggregation (usually sum or mean or maybe count?) of scored
     columns. Examples:
@@ -168,7 +168,7 @@ class Measure(object):
         except aggregators.AggregatorError as exc:
             raise DirectiveError(str(exc))
 
-        super(Measure, self).__init__()
+        super(Aggregator, self).__init__()
 
 
 class DirectiveError(ValueError):

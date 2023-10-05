@@ -57,7 +57,7 @@ class Scorer(object):
         return mc
 
     @classmethod
-    def score(kls, datafile, transform_section, score_section):
+    def score(kls, datafile, transform_section, score_section, ignore_missing=False):
         out = ScoredData()
         out.header = [kls.score_name(d) for d in score_section.directives]
         out.measure_columns = kls.make_measure_columns(score_section)
@@ -85,14 +85,17 @@ class Scorer(object):
                         transform_section.known_transforms())
 
                 name = kls.score_name(s)
-                try:
-                    sval = tx.transform(r[s.column])
-                except KeyError as err:
-                    raise ScoringError(
-                        "data columns", str(err),
-                        datafile.header)
-                except ValueError:
-                    sval = NaN
+                if (ignore_missing and s.column not in r):
+                    sval = ''
+                else:
+                    try:
+                        sval = tx.transform(r[s.column])
+                    except KeyError as err:
+                        raise ScoringError(
+                            "data columns", str(err),
+                            datafile.header)
+                    except ValueError:
+                        sval = NaN
                 scored[name] = sval
             out.data.append(scored)
 

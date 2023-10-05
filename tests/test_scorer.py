@@ -73,21 +73,21 @@ def bad_scored(data_with_bad, transforms, scores_1):
 
 @pytest.fixture
 def measures_1():
-    ms = scoresheet.MeasureSection()
+    ms = scoresheet.AggregatorSection()
     ms.append_from_strings(['happy', 'mean(happy)'])
     return ms
 
 
 @pytest.fixture
 def measures_2():
-    ms = scoresheet.MeasureSection()
+    ms = scoresheet.AggregatorSection()
     ms.append_from_strings(['affect', 'sum(happy, sad)'])
     return ms
 
 
 @pytest.fixture
 def measures_with_ratio():
-    ms = scoresheet.MeasureSection()
+    ms = scoresheet.AggregatorSection()
     ms.append_from_strings(['sum_happy', 'sum(happy)'])
     ms.append_from_strings(['sum_sad', 'sum(sad)'])
     ms.append_from_strings(['ratio_happy', 'ratio(sum_happy, sum_sad)'])
@@ -96,7 +96,7 @@ def measures_with_ratio():
 
 @pytest.fixture
 def measures_with_minmax():
-    ms = scoresheet.MeasureSection()
+    ms = scoresheet.AggregatorSection()
     ms.append_from_strings(['min_emo', 'min(happy, sad)'])
     ms.append_from_strings(['max_happy', 'max(happy)'])
     return ms
@@ -104,7 +104,7 @@ def measures_with_minmax():
 
 @pytest.fixture
 def measures_bad():
-    ms = scoresheet.MeasureSection()
+    ms = scoresheet.AggregatorSection()
     ms.append_from_strings(['happy', 'sum(badness)'])
     return ms
 

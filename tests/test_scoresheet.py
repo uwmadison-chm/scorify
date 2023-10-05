@@ -50,7 +50,7 @@ def test_successful_read(good_sample_csv):
     assert len(ss.rename_section) == 1
     assert len(ss.transform_section) == 3
     assert len(ss.score_section) == 5
-    assert len(ss.measure_section) == 6
+    assert len(ss.aggregator_section) == 6
 
 
 def test_section_iterates():
@@ -157,9 +157,9 @@ def test_score_section_dupes():
     assert len(s.directives) == 3
 
 
-def test_measure_section_dupes():
-    s = scoresheet.MeasureSection()
-    d = directives.Measure('foo', 'mean(bar)')
+def test_aggregator_section_dupes():
+    s = scoresheet.AggregatorSection()
+    d = directives.Aggregator('foo', 'mean(bar)')
     s.append_directive(d)
     with pytest.raises(scoresheet.SectionError):
         s.append_directive(d)

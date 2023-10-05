@@ -272,6 +272,24 @@ and run it on data that looks like:
 | ppt1    | 4               | 2           | 3               | 3.5         | 2         | 1.75            |
 | ppt2    | 2               | 5           | 1               | 1.5         | 5         | 0.3             |
 
+
+## Reliability tool
+
+The `reliability` command reads a scoresheet and a datafile and outputs reliability information,
+namely Cronbach's Alpha, for each measure. For example
+
+    $ reliability examples/neurohack_scoresheet.csv examples/neurohack_April+2,+2019_11.05.csv
+
+yields
+ 
+                         mean     stdev     alpha
+    panas             2.85500   1.28539   0.77941
+    mcsd              1.47692   0.50140  -0.20062
+
+By default, any missing answers are handled by ignoring all of that participant's data
+(list-wise deletion). Give the `--imputation` flag to instead fill in any missing response 
+with the average (across participants) response to the question.
+
 ## Credits
 
 Scorify was written by Nate Vack <njvack@wisc.edu> and Dan Fitch <dfitch@wisce.du>. Scorify is copyright 2023 by the Boards of Regents of the University of Wisconsin System.

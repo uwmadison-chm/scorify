@@ -18,6 +18,8 @@ Options:
   --nans-as=<string>   Print NaNs as this [default: NaN]
   --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
                        'excel-tab' [default: excel]
+  --ignore-missing     Assume blank data if a column named in the
+                       scoresheet is missing from the data
   --output=<file>      An output file to write to [default: STDOUT]
   -q --quiet           Don't print errors
   -v, --verbose        Print extra debugging output
@@ -133,8 +135,8 @@ def score_data(arguments):
         df.apply_exclusions(ss.exclude_section)
         # Actual scoring!
         scored = scorer.Scorer.score(
-            df, ss.transform_section, ss.score_section)
-        scorer.Scorer.add_measures(scored, ss.measure_section)
+            df, ss.transform_section, ss.score_section, arguments['--ignore-missing'])
+        scorer.Scorer.add_measures(scored, ss.aggregator_section)
         print_data(arguments['--output'], scored, validated['--nans-as'], dialect)
 
     except datafile.ExclusionError as err:

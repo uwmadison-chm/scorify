@@ -7,6 +7,7 @@ from scorify import directives
 from scorify import mappings
 
 
+
 class Scoresheet(object):
     def __init__(self):
         self.errors = []
@@ -15,7 +16,8 @@ class Scoresheet(object):
         self.exclude_section = ExcludeSection()
         self.transform_section = TransformSection()
         self.score_section = ScoreSection()
-        self.measure_section = MeasureSection()
+        self.aggregator_section = AggregatorSection()
+
 
     def add_error(self, message):
         self.errors.append(message)
@@ -50,7 +52,7 @@ class Reader(object):
             'exclude': sheet.exclude_section,
             'transform': sheet.transform_section,
             'score': sheet.score_section,
-            'measure': sheet.measure_section
+            'measure': sheet.aggregator_section
         }
 
         for line in self.data:
@@ -222,6 +224,10 @@ class TransformSection(Section):
 class ScoreSection(Section):
     def __init__(self, directives=None):
         super(ScoreSection, self).__init__(directives)
+        self.questions_by_measure = dict()
+
+    def get_measures(self):
+        return self.questions_by_measure.keys()
 
     def append_from_strings(self, string_list):
         if len(string_list) < 1:
@@ -238,6 +244,11 @@ class ScoreSection(Section):
         if len(string_list) > 3:
             output_name = string_list[3]
 
+        if measure_name:
+            if measure_name not in self.questions_by_measure:
+                self.questions_by_measure[measure_name] = []
+            self.questions_by_measure[measure_name].append(col_name)
+
         self.append_directive(
             directives.Score(col_name, measure_name, transform, output_name))
 
@@ -253,22 +264,22 @@ class ScoreSection(Section):
         super(ScoreSection, self).append_directive(directive)
 
 
-class MeasureSection(Section):
+class AggregatorSection(Section):
     def __init__(self, directives=None):
-        super(MeasureSection, self).__init__(directives)
+        super(AggregatorSection, self).__init__(directives)
 
     def append_from_strings(self, string_list):
         if len(string_list) < 2:
             raise directives.DirectiveError(
-                "measures must have a name and aggregator function")
+                "aggregators must have a name and aggregator function")
         name = string_list[0]
         agg_fx = string_list[1]
-        d = directives.Measure(name, agg_fx)
-        super(MeasureSection, self).append_directive(d)
+        d = directives.Aggregator(name, agg_fx)
+        super(AggregatorSection, self).append_directive(d)
 
     def append_directive(self, directive):
         name = directive.name
         dupes = [d for d in self.directives if d.name == name]
         if len(dupes) > 0:
-            raise SectionError("{0} is already a measure name".format(name))
-        super(MeasureSection, self).append_directive(directive)
+            raise SectionError("{0} is already an aggregator name".format(name))
+        super(AggregatorSection, self).append_directive(directive)
