@@ -31,7 +31,7 @@ import math
 import scorify
 from docopt import docopt
 from schema import Schema, Use, Or, And, SchemaError
-from scorify import scoresheet, datafile, scorer
+from scorify import scoresheet, datafile
 from scorify.excel_reader import ExcelReader
 
 
@@ -64,23 +64,27 @@ def validate_arguments(arguments):
         logging.root.setLevel(logging.DEBUG)
     return validated
 
+
 def parse_arguments(argv=None):
     return docopt(
         __doc__,
         argv,
         version="Scorify {0}".format(scorify.__version__))
 
+
 def main():
     logging.basicConfig(
         format="%(message)s", stream=sys.stderr, level=logging.INFO)
     compute_reliability(parse_arguments())
 
+
 def main_test(test_args):
-    score_data(parse_arguments(test_args))
+    compute_reliability(parse_arguments(test_args))
+
 
 def read_data(input_filename, dialect, page_number=0):
     if input_filename.name.endswith("xls") or input_filename.name.endswith("xlsx"):
-        workbook = openpyxl.load_workbook(thing.name)
+        workbook = openpyxl.load_workbook(input_filename)
         workbook_page = workbook[workbook.sheetnames[page_number]]
         return ExcelReader(workbook_page)
     else:
@@ -101,11 +105,8 @@ def load_datafile(filename, dialect, page_number, exclusions, sheet):
     data = datafile.Datafile(raw_data, sheet.layout_section, sheet.rename_section)
     data.read()
     if exclusions is not None:
-        exclusions_data = read_data(
-            validated['--exclusions'],
-            dialect=dialect)
+        exclusions_data = read_data(exclusions, dialect=dialect)
         exclusions_scoresheet = scoresheet.Reader(exclusions_data).read_into_scoresheet()
-        exclude_section = exclusions_scoresheet.exclude_section
         try:
             data.apply_exclusions(exclusions_scoresheet.exclude_section)
         except datafile.ExclusionError as err:
@@ -160,9 +161,13 @@ def compute_reliability(arguments):
     validated = validate_arguments(arguments)
     logging.debug(validated)
     sheet = load_scoresheet(validated['<scoresheet>'], validated['--dialect'])
-    data = load_datafile(validated['<datafile>'], validated['--dialect'], validated['--page-number'], validated['--exclusions'], sheet).data
+    data = load_datafile(validated['<datafile>'],
+                         validated['--dialect'],
+                         validated['--page-number'],
+                         validated['--exclusions'],
+                         sheet).data
 
-    #output header
+    # output header
     print(f"{'':>15}{'mean':>10}{'stdev':>10}{'alpha':>10}")
 
     for measure in sheet.score_section.get_measures():
@@ -170,7 +175,7 @@ def compute_reliability(arguments):
 
         if (validated['--imputation']):
             # substitute means for missing values
-            means = {q : mean([float(ppt[q]) for ppt in data if ppt[q].isnumeric()]) for q in questions}
+            means = {q: mean([float(ppt[q]) for ppt in data if ppt[q].isnumeric()]) for q in questions}
             data_for_measure = [[float(ppt[q] if ppt[q].isnumeric() else means[q]) for ppt in data] for q in questions]
         else:
             # delete ppts with missing values
