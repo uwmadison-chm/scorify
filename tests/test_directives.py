@@ -53,8 +53,8 @@ def test_conflicts_with():
 
 
 def test_measure():
-    m = directives.Measure('foo', 'mean(c_foo)')
+    m = directives.Aggregator('foo', 'mean(c_foo)')
     assert m.agg_fx
     assert m.to_use == ['c_foo']
     with pytest.raises(directives.DirectiveError):
-        directives.Measure('foo', 'bar')
+        directives.Aggregator('foo', 'bar')
