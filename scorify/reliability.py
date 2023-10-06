@@ -29,7 +29,7 @@ import openpyxl
 import math
 import pandas as pd
 import numpy as np
-import pingouin
+#import pingouin
 
 import scorify
 from docopt import docopt
@@ -119,6 +119,27 @@ def load_datafile(filename, dialect, page_number, exclusions, sheet):
     return data
 
 
+# if we want to use pingouin, we cna delete this
+def get_alpha(df):
+    n = df.shape[1]
+    if (n <= 1):
+        return 1.0
+
+    # the 'Sigma_i(v_t)' in the numerator
+    sum_variance = df.var().sum()
+
+    # the 'v_t' in the denominator
+    total_variance = df.sum(axis=1).var()
+
+    if (total_variance == 0):
+        logging.warning("Chronbach's alpha failed: can't divide by zero total variance")
+        return -1  # I don't know what to do here
+
+    result = (n/(n-1)) * (1 - (sum_variance / total_variance))
+    return result
+
+
+
 
 def isnumber(x):
     try:
@@ -128,24 +149,23 @@ def isnumber(x):
         return False
 
 
-# see https://www.sciencedirect.com/science/article/pii/S259029112200122X
-# def omega(data):
-#     return -1.0
+def print_row(a,b,c,d):
+    print(f"{a:>15}{b:>12}{c:>12}{d:>12}")
 
-
-def print_row(label, df):
+def make_row(label, df):
 
     numpy = df.to_numpy()
     mean = np.mean(numpy)
     stdev = np.std(numpy)
-    (alpha, confidence) = pingouin.cronbach_alpha(df)
+    alpha = get_alpha(df)
 
-    print(f"{label:>25}"
-          f"{mean:10.5f}"
-          f"{stdev:10.5f}"
-          f"{alpha:10.5f}"
-          f"{'':<3}"
-          f"({confidence[0]}, {confidence[1]})")
+    # if this is all we're using pingouin for, we could just us get_alpha
+    #(alpha, confidence) = pingouin.cronbach_alpha(df)
+
+    print_row(label,
+              f"{mean:11.4f}",
+              f"{stdev:6.4f}",
+              f"{alpha:6.4f}")
 
 
 def compute_reliability(arguments):
@@ -178,19 +198,16 @@ def compute_reliability(arguments):
     else:
         df.dropna(inplace=True)
 
-    # print header
-    print(f"{'':>25}"
-          f"{'mean':>9}"
-          f"{'stdev':>10}"
-          f"{'alpha':>10}"
-          f"{'95%':>12}")
+    # print header for measures section
+    print_row('', 'mean', 'stdev', 'alpha')
 
     for measure in sheet.score_section.get_measures():
         questions = sheet.score_section.questions_by_measure[measure]
-        print_row(measure, df[questions])
-
+        print()
+        make_row(measure, df[questions])
         for q in questions:
-            print_row("omit " + q, df[questions].drop(q, axis=1, inplace=False))
+            make_row("omit " + q, df[questions].drop(q, axis=1, inplace=False))
+
 
 
 
