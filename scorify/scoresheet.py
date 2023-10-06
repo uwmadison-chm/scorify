@@ -225,6 +225,7 @@ class ScoreSection(Section):
     def __init__(self, directives=None):
         super(ScoreSection, self).__init__(directives)
         self.questions_by_measure = dict()
+        self.all_questions = []
 
     def get_measures(self):
         return self.questions_by_measure.keys()
@@ -248,6 +249,7 @@ class ScoreSection(Section):
             if measure_name not in self.questions_by_measure:
                 self.questions_by_measure[measure_name] = []
             self.questions_by_measure[measure_name].append(col_name)
+            self.all_questions.append(col_name)
 
         self.append_directive(
             directives.Score(col_name, measure_name, transform, output_name))

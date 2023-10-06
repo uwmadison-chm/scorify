@@ -3,3 +3,6 @@ IPython
 docopt
 schema
 openpyxl
+numpy
+pandas
+pingouin

@@ -27,6 +27,9 @@ import logging
 import csv
 import openpyxl
 import math
+import pandas as pd
+import numpy as np
+import pingouin
 
 import scorify
 from docopt import docopt
@@ -116,43 +119,33 @@ def load_datafile(filename, dialect, page_number, exclusions, sheet):
     return data
 
 
-def mean(row):
-    if (len(row) == 0):
-        return 0
-    return sum(row) / len(row)
 
-def variance(row):
-    if (len(row) <=1):
-        return 0
-    return (sum([(i - mean(row))**2 for i in row]) / (len(row)-1))
-
-def stdev(row):
-    return math.sqrt(variance(row))
-
-
-# definition from https://www.youtube.com/watch?v=G0RblT5qkFQ
-def alpha(data):
-    n = len(data)
-    if (n <= 1):
-        return 1.0
-
-    # the 'Sigma_i(v_t)' in the numerator
-    sum_variance = sum([variance(row) for row in data])
-
-    # the 'v_t' in the denominator
-    total_variance = variance([sum(x) for x in zip(*data)])
-
-    if (total_variance == 0):
-        logging.warning("Chronbach's alpha failed: can't divide by zero total variance")
-        return -1  # I don't know what to do here
-
-    result = (n/(n-1)) * (1 - (sum_variance / total_variance))
-    return result
+def isnumber(x):
+    try:
+        float(x)
+        return True
+    except:
+        return False
 
 
 # see https://www.sciencedirect.com/science/article/pii/S259029112200122X
 # def omega(data):
 #     return -1.0
+
+
+def print_row(label, df):
+
+    numpy = df.to_numpy()
+    mean = np.mean(numpy)
+    stdev = np.std(numpy)
+    (alpha, confidence) = pingouin.cronbach_alpha(df)
+
+    print(f"{label:>25}"
+          f"{mean:10.5f}"
+          f"{stdev:10.5f}"
+          f"{alpha:10.5f}"
+          f"{'':<3}"
+          f"({confidence[0]}, {confidence[1]})")
 
 
 def compute_reliability(arguments):
@@ -161,32 +154,44 @@ def compute_reliability(arguments):
     validated = validate_arguments(arguments)
     logging.debug(validated)
     sheet = load_scoresheet(validated['<scoresheet>'], validated['--dialect'])
-    data = load_datafile(validated['<datafile>'],
-                         validated['--dialect'],
-                         validated['--page-number'],
-                         validated['--exclusions'],
-                         sheet).data
+    raw_data = load_datafile(validated['<datafile>'],
+                             validated['--dialect'],
+                             validated['--page-number'],
+                             validated['--exclusions'],
+                             sheet).data
 
-    # output header
-    print(f"{'':>15}{'mean':>10}{'stdev':>10}{'alpha':>10}")
+    # load the data indo a pandas dataframe
+    df = pd.DataFrame(data=raw_data)
+
+    #remove metadata columns
+    df = df[sheet.score_section.all_questions]
+
+    # turn any empty cells, string, etc. into NaNs
+    df = df[df.applymap(isnumber)]
+
+    # turn everything into floats
+    df = df.applymap(float)
+
+    # get rid of NaNs
+    if (validated['--imputation']):
+        df.fillna(df.mean(), inplace=True)
+    else:
+        df.dropna(inplace=True)
+
+    # print header
+    print(f"{'':>25}"
+          f"{'mean':>9}"
+          f"{'stdev':>10}"
+          f"{'alpha':>10}"
+          f"{'95%':>12}")
 
     for measure in sheet.score_section.get_measures():
         questions = sheet.score_section.questions_by_measure[measure]
+        print_row(measure, df[questions])
 
-        if (validated['--imputation']):
-            # substitute means for missing values
-            means = {q: mean([float(ppt[q]) for ppt in data if ppt[q].isnumeric()]) for q in questions}
-            data_for_measure = [[float(ppt[q] if ppt[q].isnumeric() else means[q]) for ppt in data] for q in questions]
-        else:
-            # delete ppts with missing values
-            clean = [ppt for ppt in data if all([ppt[q].isnumeric() for q in questions])]
-            data_for_measure = [[float(ppt[q]) for ppt in clean] for q in questions]
+        for q in questions:
+            print_row("omit " + q, df[questions].drop(q, axis=1, inplace=False))
 
-        # data_for_measure is "sideways": each row has all participants' answers to one question
-
-        flat = sum(data_for_measure, [])
-
-        print(f"{measure:<15}{mean(flat):10.5f}{stdev(flat):10.5f}{alpha(data_for_measure):10.5f}")
 
 
 
