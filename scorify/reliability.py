@@ -29,7 +29,7 @@ import openpyxl
 import math
 import pandas as pd
 import numpy as np
-#import pingouin
+import scipy as sp
 
 import scorify
 from docopt import docopt
@@ -138,22 +138,26 @@ def get_alpha(df):
     return result
 
 
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.mahalanobis.html
-def get_mahalanobis(df_row, mean, inverse_covariance):
-    row = np.array(df_row)
-    diff = np.subtract(row,mean)
-    diff_t = diff.reshape(-1,1)
-    under = diff.dot(inverse_covariance.dot(diff_t))
-    return math.sqrt(under)
-
-
+# https://www.geeksforgeeks.org/how-to-calculate-mahalanobis-distance-in-python/
+def get_mahalanobis(df): 
+    y_mu = df - np.mean(df, axis=0)  # the axis=0 is mandatory here for newer versions of pandas
+    cov = np.cov(df.values.T) 
+    try:
+        inv_covmat = np.linalg.inv(cov) 
+    except:
+        # its probably singular
+        return float('NaN')
+    left = np.dot(y_mu, inv_covmat) 
+    mahal = np.dot(left, y_mu.T) 
+    return mahal.diagonal() 
+  
+ 
 def isnumber(x):
     try:
         float(x)
         return True
     except:
         return False
-
 
 def print_row(a,b,c,d):
     print(f"{a:>15}{b:>13}{c:>13}{d:>13}")
@@ -212,7 +216,6 @@ def compute_reliability(arguments):
     else:
         df.dropna(inplace=True)
 
-
     # print header for measures section
     print("")
     print_row('', 'mean', 'stdev', 'alpha')
@@ -223,25 +226,25 @@ def compute_reliability(arguments):
         for q in questions:
             make_row("omit " + q, df[questions].drop(q, axis=1, inplace=False))
 
+    return
+
     # print header for participants section
     print("")
-    print_row('participant', 'measure', 'mahalanobis', '')
+    print_row('participant', 'measure', 'mahalanobis', 'p')
 
     for measure in sheet.score_section.get_measures():
         questions = sheet.score_section.questions_by_measure[measure]
-        df_measure = df[questions]
+        df_measure = df[questions].copy()
 
-        mean = np.array(df_measure.mean())
 
-        try:
-            inverse_covariance = np.linalg.pinv(df_measure.cov())
-        except Exception as e:
-            logging.error("Failed to find inverse covariance matrix for mahalonobis for '" + measure + "': " + str(e))
-            continue
+        # get the Mahalanobis distance for each participant
+        df_measure['mahal'] = get_mahalanobis(df_measure)
+  
+        # calculate p-value for each mahalanobis distance 
+        df_measure['p'] = 1 - sp.stats.chi2.cdf(df_measure['mahal'], 3) 
 
-        mahalanobis = df_measure.apply(get_mahalanobis, args=(mean, inverse_covariance), axis=1)
-        for (ppt, m) in mahalanobis.items():
-            print_row(ppt, measure, f"{m:6.4f}", '')
+        for participant, row in df_measure.iterrows():
+            print_row(participant, measure, f"{row['mahal']:6.4f}", f"{row['p']:6.4f}")
 
 
 if __name__ == '__main__':

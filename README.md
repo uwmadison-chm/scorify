@@ -275,9 +275,8 @@ and run it on data that looks like:
 
 ## Reliability tool
 
-The `reliability` command reads a scoresheet and a datafile and outputs information about
-question reliability, such as Cronbach's Alpha, and participant outliers, such as 
-Mahalanobis distance.
+The `reliability` command reads a scoresheet and a datafile and outputs
+Cronbach's alpha for each measure and each measure omitting each question.
 
     $ reliability examples/neurohack_scoresheet.csv examples/neurohack_April+2,+2019_11.05.csv
 
