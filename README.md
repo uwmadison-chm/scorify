@@ -275,16 +275,11 @@ and run it on data that looks like:
 
 ## Reliability tool
 
-The `reliability` command reads a scoresheet and a datafile and outputs reliability information,
-namely Cronbach's Alpha, for each measure. For example
+The `reliability` command reads a scoresheet and a datafile and outputs information about
+question reliability, such as Cronbach's Alpha, and participant outliers, such as 
+Mahalanobis distance.
 
     $ reliability examples/neurohack_scoresheet.csv examples/neurohack_April+2,+2019_11.05.csv
-
-yields
- 
-                         mean     stdev     alpha
-    panas             2.85500   1.28539   0.77941
-    mcsd              1.47692   0.50140  -0.20062
 
 By default, any missing answers are handled by ignoring all of that participant's data
 (list-wise deletion). Give the `--imputation` flag to instead fill in any missing response 

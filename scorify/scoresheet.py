@@ -226,6 +226,7 @@ class ScoreSection(Section):
         super(ScoreSection, self).__init__(directives)
         self.questions_by_measure = dict()
         self.all_questions = []
+        self.participant_id_column_name = None
 
     def get_measures(self):
         return self.questions_by_measure.keys()
@@ -238,6 +239,10 @@ class ScoreSection(Section):
         measure_name = ''
         transform = ''
         output_name = None
+        if (self.participant_id_column_name is None):
+            if (len(string_list) != 1):
+                self.errors.append('first score row should contain only the name of the participant id column')
+            self.participant_id_column_name = string_list[0]
         if len(string_list) > 1:
             measure_name = string_list[1]
         if len(string_list) > 2:

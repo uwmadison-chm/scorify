@@ -119,7 +119,6 @@ def load_datafile(filename, dialect, page_number, exclusions, sheet):
     return data
 
 
-# if we want to use pingouin, we cna delete this
 def get_alpha(df):
     n = df.shape[1]
     if (n <= 1):
@@ -139,6 +138,13 @@ def get_alpha(df):
     return result
 
 
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.mahalanobis.html
+def get_mahalanobis(df_row, mean, inverse_covariance):
+    row = np.array(df_row)
+    diff = np.subtract(row,mean)
+    diff_t = diff.reshape(-1,1)
+    under = diff.dot(inverse_covariance.dot(diff_t))
+    return math.sqrt(under)
 
 
 def isnumber(x):
@@ -150,7 +156,7 @@ def isnumber(x):
 
 
 def print_row(a,b,c,d):
-    print(f"{a:>15}{b:>12}{c:>12}{d:>12}")
+    print(f"{a:>15}{b:>13}{c:>13}{d:>13}")
 
 def make_row(label, df):
 
@@ -174,6 +180,7 @@ def compute_reliability(arguments):
     validated = validate_arguments(arguments)
     logging.debug(validated)
     sheet = load_scoresheet(validated['<scoresheet>'], validated['--dialect'])
+    id_name = sheet.score_section.participant_id_column_name
     raw_data = load_datafile(validated['<datafile>'],
                              validated['--dialect'],
                              validated['--page-number'],
@@ -182,6 +189,13 @@ def compute_reliability(arguments):
 
     # load the data indo a pandas dataframe
     df = pd.DataFrame(data=raw_data)
+
+
+    # rows rows with no ppt id, e.g. if csv had blank lines
+    df = df[df[id_name] != '']
+
+    # name the rows with the ppt id's
+    df.set_index(df[id_name], inplace=True)
 
     #remove metadata columns
     df = df[sheet.score_section.all_questions]
@@ -198,18 +212,36 @@ def compute_reliability(arguments):
     else:
         df.dropna(inplace=True)
 
+
     # print header for measures section
+    print("")
     print_row('', 'mean', 'stdev', 'alpha')
 
     for measure in sheet.score_section.get_measures():
         questions = sheet.score_section.questions_by_measure[measure]
-        print()
         make_row(measure, df[questions])
         for q in questions:
             make_row("omit " + q, df[questions].drop(q, axis=1, inplace=False))
 
+    # print header for participants section
+    print("")
+    print_row('participant', 'measure', 'mahalanobis', '')
 
+    for measure in sheet.score_section.get_measures():
+        questions = sheet.score_section.questions_by_measure[measure]
+        df_measure = df[questions]
 
+        mean = np.array(df_measure.mean())
+
+        try:
+            inverse_covariance = np.linalg.pinv(df_measure.cov())
+        except Exception as e:
+            logging.error("Failed to find inverse covariance matrix for mahalonobis for '" + measure + "': " + str(e))
+            continue
+
+        mahalanobis = df_measure.apply(get_mahalanobis, args=(mean, inverse_covariance), axis=1)
+        for (ppt, m) in mahalanobis.items():
+            print_row(ppt, measure, f"{m:6.4f}", '')
 
 
 if __name__ == '__main__':
