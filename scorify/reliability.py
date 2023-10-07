@@ -93,6 +93,7 @@ def read_data(input_filename, dialect, page_number=0):
     else:
         return csv.reader(input_filename, dialect=dialect)
 
+
 def load_scoresheet(filename, dialect):
     raw_data = read_data(filename, dialect)
     sheet = scoresheet.Reader(raw_data).read_into_scoresheet()
@@ -102,6 +103,7 @@ def load_scoresheet(filename, dialect):
             logging.error(err)
         sys.exit(1)
     return sheet
+
 
 def load_datafile(filename, dialect, page_number, exclusions, sheet):
     raw_data = read_data(filename, dialect, page_number)
@@ -131,8 +133,8 @@ def get_alpha(df):
     total_variance = df.sum(axis=1).var()
 
     if (total_variance == 0):
-        logging.warning("Chronbach's alpha failed: can't divide by zero total variance")
-        return -1  # I don't know what to do here
+        logging.warning("Chronbach's alpha failed: returning NaN")
+        return float('NaN')
 
     result = (n/(n-1)) * (1 - (sum_variance / total_variance))
     return result
@@ -142,11 +144,25 @@ def get_alpha(df):
 def get_mahalanobis(df): 
     y_mu = df - np.mean(df, axis=0)  # the axis=0 is mandatory here for newer versions of pandas
     cov = np.cov(df.values.T) 
+
+    # apparently, it is possible for linalg.inv(cov) to succeed even though cov is
+    # so ill-conditioned that the output is garbage for a floating point representation
+    # https://stackoverflow.com/questions/13249108/efficient-pythonic-check-for-singular-matrix/13264934#13264934
+    # https://stackoverflow.com/questions/31188979/is-numpy-linalg-inv-giving-the-correct-matrix-inverse-edit-why-does-inv-gi
+    if np.linalg.cond(cov) < 1/sys.float_info.epsilon:
+        i = np.linalg.inv(cov)
+    else:
+        logging.warning("Mahalanobis failed: returning NaN")
+        return float('NaN')
+
     try:
         inv_covmat = np.linalg.inv(cov) 
     except:
         # its probably singular
+        logging.warning("Mahalanobis failed: returning NaN")
         return float('NaN')
+
+    logging.debug(inv_covmat)
     left = np.dot(y_mu, inv_covmat) 
     mahal = np.dot(left, y_mu.T) 
     return mahal.diagonal() 
@@ -159,8 +175,10 @@ def isnumber(x):
     except:
         return False
 
+
 def print_row(a,b,c,d):
     print(f"{a:>15}{b:>13}{c:>13}{d:>13}")
+
 
 def make_row(label, df):
 
@@ -169,7 +187,7 @@ def make_row(label, df):
     stdev = np.std(numpy)
     alpha = get_alpha(df)
 
-    # if this is all we're using pingouin for, we could just us get_alpha
+    # we could use pingouin instead
     #(alpha, confidence) = pingouin.cronbach_alpha(df)
 
     print_row(label,
@@ -194,8 +212,7 @@ def compute_reliability(arguments):
     # load the data indo a pandas dataframe
     df = pd.DataFrame(data=raw_data)
 
-
-    # rows rows with no ppt id, e.g. if csv had blank lines
+    # remove rows with no participant id, e.g. if csv had blank lines
     df = df[df[id_name] != '']
 
     # name the rows with the ppt id's
@@ -220,29 +237,31 @@ def compute_reliability(arguments):
     print("")
     print_row('', 'mean', 'stdev', 'alpha')
 
+    # handle the measures one at a time
     for measure in sheet.score_section.get_measures():
         questions = sheet.score_section.questions_by_measure[measure]
+        # print mean, stdev, alpha for the measure
         make_row(measure, df[questions])
         for q in questions:
+            # print mean, stdev, alpha for the measure omitting the question
             make_row("omit " + q, df[questions].drop(q, axis=1, inplace=False))
-
-    return
 
     # print header for participants section
     print("")
     print_row('participant', 'measure', 'mahalanobis', 'p')
 
+    # handle the measures one at a time
     for measure in sheet.score_section.get_measures():
         questions = sheet.score_section.questions_by_measure[measure]
         df_measure = df[questions].copy()
 
-
         # get the Mahalanobis distance for each participant
         df_measure['mahal'] = get_mahalanobis(df_measure)
-  
+
         # calculate p-value for each mahalanobis distance 
         df_measure['p'] = 1 - sp.stats.chi2.cdf(df_measure['mahal'], 3) 
 
+        # print out mahalanobis distance and p value for each participant
         for participant, row in df_measure.iterrows():
             print_row(participant, measure, f"{row['mahal']:6.4f}", f"{row['p']:6.4f}")
 
