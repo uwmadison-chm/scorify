@@ -275,20 +275,18 @@ and run it on data that looks like:
 
 ## Reliability tool
 
-The `reliability` command reads a scoresheet and a datafile and outputs reliability information,
-namely Cronbach's Alpha, for each measure. For example
+The `reliability` command reads a scoresheet and a datafile and outputs
+Cronbach's alpha for each measure, Cronbach's alpha for each measure omitting each
+question for that measure, the Mahalanobis distance for each participant, and the
+p value for each Mahalanobis distance.
 
-    $ reliability examples/neurohack_scoresheet.csv examples/neurohack_April+2,+2019_11.05.csv
-
-yields
- 
-                         mean     stdev     alpha
-    panas             2.85500   1.28539   0.77941
-    mcsd              1.47692   0.50140  -0.20062
+    $ reliability examples/test_alpha_scoresheet.csv examples/test_alpha_data.csv
 
 By default, any missing answers are handled by ignoring all of that participant's data
 (list-wise deletion). Give the `--imputation` flag to instead fill in any missing response 
-with the average (across participants) response to the question.
+with the average (across participants) response to the question. If you get NaNs for the
+Mahalanobis distance, it's probably because numpy failed to compute an inverse for the
+covariance matrix.
 
 ## Credits
 
