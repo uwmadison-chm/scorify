@@ -41,45 +41,46 @@ from scorify.excel_reader import ExcelReader
 
 
 def open_for_read(fname):
-    return io.open(os.path.expanduser(fname), 'r', encoding='utf-8-sig')
+    return io.open(os.path.expanduser(fname), "r", encoding="utf-8-sig")
 
 
 def validate_arguments(arguments):
-    s = Schema({
-        '<scoresheet>': Use(open_for_read, error="Can't open scoresheet"),
-        '<datafile>': Use(open_for_read, error="Can't open datafile"),
-        '--sheet': Use(int),
-        '--output': str,
-        '--exclusions': Or(
-            None, Use(open_for_read, error="Can't open exclusions")),
-        '--dialect': And(
-            Use(str.lower),
-            lambda s: s in ['excel', 'excel-tab'],
-            error="Dialect must be excel or excel-tab"),
-        '--nans-as': str,
-        str: object  # Ignore extras
-    })
+    s = Schema(
+        {
+            "<scoresheet>": Use(open_for_read, error="Can't open scoresheet"),
+            "<datafile>": Use(open_for_read, error="Can't open datafile"),
+            "--sheet": Use(int),
+            "--output": str,
+            "--exclusions": Or(None, Use(open_for_read, error="Can't open exclusions")),
+            "--dialect": And(
+                Use(str.lower),
+                lambda s: s in ["excel", "excel-tab"],
+                error="Dialect must be excel or excel-tab",
+            ),
+            "--nans-as": str,
+            str: object,  # Ignore extras
+        }
+    )
     try:
         validated = s.validate(arguments)
     except SchemaError as e:
         logging.error("Error: " + str(e))
         sys.exit(1)
-    if validated['--quiet']:
+    if validated["--quiet"]:
         logging.root.setLevel(logging.CRITICAL)
-    if validated['--verbose']:
+    if validated["--verbose"]:
         logging.root.setLevel(logging.DEBUG)
     return validated
 
+
 def parse_arguments(argv=None):
-    return docopt(
-        __doc__,
-        argv,
-        version="Scorify {0}".format(scorify.__version__))
+    return docopt(__doc__, argv, version="Scorify {0}".format(scorify.__version__))
+
 
 def main():
-    logging.basicConfig(
-        format="%(message)s", stream=sys.stderr, level=logging.INFO)
+    logging.basicConfig(format="%(message)s", stream=sys.stderr, level=logging.INFO)
     score_data(parse_arguments())
+
 
 def main_test(test_args):
     score_data(parse_arguments(test_args))
@@ -94,39 +95,40 @@ def read_data(thing, dialect, sheet_number=0):
     else:
         return csv.reader(thing, dialect=dialect)
 
+
 def score_data(arguments):
     # This method is way too long, I know.
     validated = validate_arguments(arguments)
     logging.debug(validated)
-    dialect = validated['--dialect']
-    scoresheet_data = read_data(validated['<scoresheet>'], dialect=dialect)
+    dialect = validated["--dialect"]
+    scoresheet_data = read_data(validated["<scoresheet>"], dialect=dialect)
 
     # First, read the scoresheet
     ss = scoresheet.Reader(scoresheet_data).read_into_scoresheet()
     if ss.has_errors():
-        logging.error("Errors in {0}:".format(arguments['<scoresheet>']))
+        logging.error("Errors in {0}:".format(arguments["<scoresheet>"]))
         for err in ss.errors:
             logging.error(err)
         sys.exit(1)
 
     # Load the data
-    datafile_data = read_data(validated['<datafile>'], dialect=dialect, sheet_number=validated['--sheet'])
-    df = datafile.Datafile(
-        datafile_data, ss.layout_section, ss.rename_section)
+    datafile_data = read_data(
+        validated["<datafile>"], dialect=dialect, sheet_number=validated["--sheet"]
+    )
+    df = datafile.Datafile(datafile_data, ss.layout_section, ss.rename_section)
     df.read()
 
     # Load and apply exclusions file
-    if validated['--exclusions'] is not None:
-        exclusions_data = read_data(
-            validated['--exclusions'],
-            dialect=dialect)
+    if validated["--exclusions"] is not None:
+        exclusions_data = read_data(validated["--exclusions"], dialect=dialect)
         exc_ss = scoresheet.Reader(exclusions_data).read_into_scoresheet()
         exc = exc_ss.exclude_section
         try:
             df.apply_exclusions(exc)
         except datafile.ExclusionError as err:
-            logging.critical("Error in exclusions of {0}:".format(
-                arguments['--exclusions']))
+            logging.critical(
+                "Error in exclusions of {0}:".format(arguments["--exclusions"])
+            )
             logging.critical(err)
             sys.exit(1)
 
@@ -134,24 +136,22 @@ def score_data(arguments):
         # Apply exclusions from scoresheet
         df.apply_exclusions(ss.exclude_section)
         # Actual scoring!
-        scored = scorer.Scorer.score(
-            df, ss.transform_section, ss.score_section, arguments['--ignore-missing'])
-        scorer.Scorer.add_measures(scored, ss.aggregator_section)
-        print_data(arguments['--output'], scored, validated['--nans-as'], dialect)
+        scored = scorer.Scorer.score(df, ss.transform_section, ss.score_section)
+        scorer.Scorer.add_measures(scored, ss.measure_section)
+        print_data(arguments["--output"], scored, validated["--nans-as"], dialect)
 
     except datafile.ExclusionError as err:
-        logging.critical("Error in exclusions of {0}:".format(
-            arguments['<scoresheet>']))
+        logging.critical(
+            "Error in exclusions of {0}:".format(arguments["<scoresheet>"])
+        )
         logging.critical(err)
         sys.exit(1)
     except (scorer.ScoringError, scorer.TransformError) as err:
-        logging.critical("Error in score of {0}:".format(
-            arguments['<scoresheet>']))
+        logging.critical("Error in score of {0}:".format(arguments["<scoresheet>"]))
         logging.critical(err)
         sys.exit(1)
     except scorer.AggregationError as err:
-        logging.critical("Error in measures of {0}:".format(
-            arguments['<scoresheet>']))
+        logging.critical("Error in measures of {0}:".format(arguments["<scoresheet>"]))
         logging.critical(err)
         sys.exit(1)
 
@@ -160,17 +160,17 @@ def print_data(output, sd, nans_as, dialect):
     if output == "STDOUT":
         out = csv.writer(sys.stdout, dialect=dialect)
     else:
-        outfile = open(output, 'w')
+        outfile = open(output, "w")
         out = csv.writer(outfile, dialect=dialect)
 
     out.writerow(sd.header)
     for row in sd.keep:
-        rk = [row.get(h, '') for h in sd.header]
+        rk = [row.get(h, "") for h in sd.header]
         out.writerow(rk)
     for row in sd:
         rl = [pp(row[h], none_val=nans_as) for h in sd.header]
         out.writerow(rl)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
