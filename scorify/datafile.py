@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2024 Board of Regents of the University of Wisconsin System
 
 """
 Reads data files (or CSV objects) into datafile objects.
@@ -32,21 +32,24 @@ class Datafile(object):
         for line_num, line in enumerate(self.lines):
             # Since we assume layout_section is valid, we only care about
             # header and skip and keep lines -- everything else must be data.
-            line_type = ''
+            line_type = ""
             if line_num < len(self.layout_section.directives):
                 line_type = self.layout_section.directives[line_num].info
-            if line_type == 'skip':
+            if line_type == "skip":
                 continue
-            if line_type == 'header':
-                self.header = [
-                    self.rename_section.map_name(h.strip()) for h in line]
+            if line_type == "header":
+                self.header = [self.rename_section.map_name(h.strip()) for h in line]
                 # Warn if header contains duplicates
                 # Don't warn if there's a duplicate blank header, which we see from Excel input sometimes
                 seen = set()
-                duplicates = set(x for x in self.header if x in seen or (x != '' and seen.add(x)))
+                duplicates = set(
+                    x for x in self.header if x in seen or (x != "" and seen.add(x))
+                )
                 if len(duplicates) > 0:
-                    warnings.warn(f"Duplicates {duplicates} in header {self.header}", UserWarning)
-            elif line_type == 'keep':
+                    warnings.warn(
+                        f"Duplicates {duplicates} in header {self.header}", UserWarning
+                    )
+            elif line_type == "keep":
                 self.append_keep(line)
             else:
                 self.append_data(line)
@@ -54,7 +57,7 @@ class Datafile(object):
     def pad_data(self, data):
         # Force lines of funny length to be the header's length
         len_diff = len(self.header) - len(data)
-        padding = [''] * len_diff
+        padding = [""] * len_diff
         return data + padding
 
     def append_data(self, data):
@@ -71,8 +74,7 @@ class Datafile(object):
             try:
                 exclude = any([e.excludes(row) for e in exclusion_section])
             except KeyError as exc:
-                raise ExclusionError(
-                    "data columns", str(exc), self.data.header)
+                raise ExclusionError("data columns", str(exc), self.data.header)
             if not exclude:
                 new_data.append(row)
         self.data = new_data

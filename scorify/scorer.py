@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2024 Board of Regents of the University of Wisconsin System
 from __future__ import absolute_import
 
 from collections import defaultdict

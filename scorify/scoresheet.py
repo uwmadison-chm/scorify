@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2024 Board of Regents of the University of Wisconsin System
 from __future__ import absolute_import
 
 from scorify import directives
 from scorify import mappings
-
 
 
 class Scoresheet(object):
@@ -17,7 +16,6 @@ class Scoresheet(object):
         self.transform_section = TransformSection()
         self.score_section = ScoreSection()
         self.aggregator_section = AggregatorSection()
-
 
     def add_error(self, message):
         self.errors.append(message)
@@ -47,12 +45,12 @@ class Reader(object):
         if sheet is None:
             sheet = Scoresheet()
         section_map = {
-            'layout': sheet.layout_section,
-            'rename': sheet.rename_section,
-            'exclude': sheet.exclude_section,
-            'transform': sheet.transform_section,
-            'score': sheet.score_section,
-            'measure': sheet.aggregator_section
+            "layout": sheet.layout_section,
+            "rename": sheet.rename_section,
+            "exclude": sheet.exclude_section,
+            "transform": sheet.transform_section,
+            "score": sheet.score_section,
+            "measure": sheet.aggregator_section,
         }
 
         for line in self.data:
@@ -67,14 +65,15 @@ class Reader(object):
             except KeyError:
                 sheet.add_error(
                     "Line {0}: I don't understand {1}".format(
-                        self.data.line_num, line_type))
+                        self.data.line_num, line_type
+                    )
+                )
             except (
                 SectionError,
                 directives.DirectiveError,
-                mappings.MappingError
+                mappings.MappingError,
             ) as exc:
-                sheet.add_error("Line {0}: {1}".format(
-                    self.data.line_num, str(exc)))
+                sheet.add_error("Line {0}: {1}".format(self.data.line_num, str(exc)))
         if not sheet.layout_section.is_valid():
             for err in sheet.layout_section.errors:
                 sheet.add_error(err)
@@ -115,20 +114,20 @@ class LayoutSection(Section):
 
     def is_valid(self):
         self.errors = []
-        headers = [d for d in self.directives if d.info == 'header']
+        headers = [d for d in self.directives if d.info == "header"]
         if len(headers) > 1:
-            self.errors.append('You can only have one header in your layout')
+            self.errors.append("You can only have one header in your layout")
         if len(headers) < 1:
-            self.errors.append('You must have one header in your layout')
+            self.errors.append("You must have one header in your layout")
 
-        datas = [d for d in self.directives if d.info == 'data']
+        datas = [d for d in self.directives if d.info == "data"]
         if len(datas) > 1:
-            self.errors.append('You can only have one data in your layout')
+            self.errors.append("You can only have one data in your layout")
         if len(datas) < 1:
-            self.errors.append('You must have one data in your layout')
+            self.errors.append("You must have one data in your layout")
 
         last_entry = self.directives[-1]
-        if not last_entry.info == 'data':
+        if not last_entry.info == "data":
             self.errors.append("Data needs to come last in your layout")
 
         return len(self.errors) == 0
@@ -141,7 +140,8 @@ class LayoutSection(Section):
         """
         if len(string_list) < 1:
             raise directives.DirectiveError(
-                "layout must be 'header', 'data', or 'skip'")
+                "layout must be 'header', 'data', or 'skip'"
+            )
         self.append_directive(directives.Layout(string_list[0]))
 
 
@@ -153,9 +153,9 @@ class RenameSection(Section):
     def append_from_strings(self, string_list):
         if len(string_list) < 2:
             raise directives.DirectiveError(
-                "rename needs an original and new column name")
-        self.append_directive(
-            directives.Rename(string_list[0], string_list[1]))
+                "rename needs an original and new column name"
+            )
+        self.append_directive(directives.Rename(string_list[0], string_list[1]))
 
     def append_directive(self, directive):
         self.__raise_on_conflict(directive)
@@ -168,11 +168,10 @@ class RenameSection(Section):
 
     def __raise_on_conflict(self, directive):
         conflict = next(
-            (d for d in self.directives if directive.conflicts_with(d)),
-            None)
+            (d for d in self.directives if directive.conflicts_with(d)), None
+        )
         if conflict:
-            raise SectionError(
-                "%s conflicts with %s" % (directive, conflict))
+            raise SectionError("%s conflicts with %s" % (directive, conflict))
 
 
 class ExcludeSection(Section):
@@ -181,10 +180,9 @@ class ExcludeSection(Section):
 
     def append_from_strings(self, string_list):
         if len(string_list) < 1:
-            raise directives.DirectiveError(
-                "exclude must have a column name")
+            raise directives.DirectiveError("exclude must have a column name")
         exclude_col = string_list[0]
-        exclude_val = ''
+        exclude_val = ""
         if len(string_list) > 1:
             exclude_val = string_list[1]
         self.append_directive(directives.Exclude(exclude_col, exclude_val))
@@ -194,12 +192,13 @@ class TransformSection(Section):
     def __init__(self, directive_list=None):
         super(TransformSection, self).__init__(directive_list)
         self.transform_dict = {}
-        self.identity_transform = directives.Transform('', '')
+        self.identity_transform = directives.Transform("", "")
 
     def append_from_strings(self, string_list):
         if len(string_list) < 2:
             raise directives.DirectiveError(
-                "transform must have a name and transformation")
+                "transform must have a name and transformation"
+            )
         name, xform = string_list[0], string_list[1]
         self.append_directive(directives.Transform(name, xform))
 
@@ -207,8 +206,7 @@ class TransformSection(Section):
         name = directive.name
         dupes = [d for d in self.directives if d.name == name]
         if len(dupes) > 0:
-            raise SectionError(
-                "there's already a transform called {0}".format(name))
+            raise SectionError("there's already a transform called {0}".format(name))
         self.transform_dict[name] = directive
         super(TransformSection, self).append_directive(directive)
 
@@ -216,7 +214,7 @@ class TransformSection(Section):
         return self.transform_dict.keys()
 
     def __getitem__(self, name):
-        if str(name).strip() == '':
+        if str(name).strip() == "":
             return self.identity_transform
         return self.transform_dict[name]
 
@@ -233,15 +231,16 @@ class ScoreSection(Section):
 
     def append_from_strings(self, string_list):
         if len(string_list) < 1:
-            raise directives.DirectiveError(
-                "score must have a column name")
+            raise directives.DirectiveError("score must have a column name")
         col_name = string_list[0]
-        measure_name = ''
-        transform = ''
+        measure_name = ""
+        transform = ""
         output_name = None
-        if (self.participant_id_column_name is None):
-            if (len(string_list) != 1):
-                self.errors.append('first score row should contain only the name of the participant id column')
+        if self.participant_id_column_name is None:
+            if len(string_list) != 1:
+                self.errors.append(
+                    "first score row should contain only the name of the participant id column"
+                )
             self.participant_id_column_name = string_list[0]
         if len(string_list) > 1:
             measure_name = string_list[1]
@@ -257,17 +256,21 @@ class ScoreSection(Section):
             self.all_questions.append(col_name)
 
         self.append_directive(
-            directives.Score(col_name, measure_name, transform, output_name))
+            directives.Score(col_name, measure_name, transform, output_name)
+        )
 
     def append_directive(self, directive):
         column = directive.column
         measure_name = directive.measure_name
         dupes = [
-            d for d in self.directives if
-            d.column == column and d.measure_name == measure_name]
+            d
+            for d in self.directives
+            if d.column == column and d.measure_name == measure_name
+        ]
         if len(dupes) > 0:
-            raise SectionError("{0} is already part of {1}".format(
-                column, measure_name))
+            raise SectionError(
+                "{0} is already part of {1}".format(column, measure_name)
+            )
         super(ScoreSection, self).append_directive(directive)
 
 
@@ -278,7 +281,8 @@ class AggregatorSection(Section):
     def append_from_strings(self, string_list):
         if len(string_list) < 2:
             raise directives.DirectiveError(
-                "aggregators must have a name and aggregator function")
+                "aggregators must have a name and aggregator function"
+            )
         name = string_list[0]
         agg_fx = string_list[1]
         d = directives.Aggregator(name, agg_fx)

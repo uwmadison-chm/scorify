@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2024 Board of Regents of the University of Wisconsin System
 from __future__ import absolute_import
 
 from scorify import mappings
@@ -45,9 +45,8 @@ class Layout(object):
 
     def __init__(self, info):
         info_lower = info.strip().lower()
-        if info_lower not in set(['header', 'data', 'skip', 'keep']):
-            raise DirectiveError(
-                "Didn't understand layout {0!r}".format(info))
+        if info_lower not in set(["header", "data", "skip", "keep"]):
+            raise DirectiveError("Didn't understand layout {0!r}".format(info))
 
         self.info = info_lower
         super(Layout, self).__init__()
@@ -62,6 +61,7 @@ class Rename(object):
     All logic for this is in the datafile, since that's the only place where
     we know column names.
     """
+
     def __init__(self, original_name, new_name):
         self.original_name = str(original_name)
         self.new_name = str(new_name)
@@ -70,15 +70,15 @@ class Rename(object):
         if len(self.new_name) == 0:
             raise DirectiveError("Can't give a column a blank name.")
         if self.original_name == self.new_name:
-            raise DirectiveError(
-                "Can't rename a column to its original name.")
+            raise DirectiveError("Can't rename a column to its original name.")
 
     def conflicts_with(self, other):
         return (
-            self.original_name == other.original_name or
-            self.original_name == other.new_name or
-            self.new_name == other.new_name or
-            self.new_name == other.original_name)
+            self.original_name == other.original_name
+            or self.original_name == other.new_name
+            or self.new_name == other.new_name
+            or self.new_name == other.original_name
+        )
 
     def __str__(self):
         return "rename %s %s" % (self.original_name, self.new_name)

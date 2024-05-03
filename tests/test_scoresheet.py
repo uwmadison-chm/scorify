@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2024 Board of Regents of the University of Wisconsin System
 
 import pytest
 
@@ -11,7 +11,10 @@ from scorify import scoresheet, directives
 def good_sample_csv():
     import io
     import csv
-    return csv.reader(io.StringIO("""
+
+    return csv.reader(
+        io.StringIO(
+            """
 layout,header
 layout,skip
  layout,data
@@ -38,7 +41,9 @@ measure,emo_vals,"join(happy, sad)"
 measure,happy_ratio,"ratio(mean_happy,mean_sad)"
 measure,min_emo,"min(happy, sad)"
 measure,max_happy,max(happy)
-"""))
+"""
+        )
+    )
 
 
 def test_successful_read(good_sample_csv):
@@ -54,9 +59,9 @@ def test_successful_read(good_sample_csv):
 
 
 def test_section_iterates():
-    skip = directives.Layout('skip')
-    header = directives.Layout('header')
-    data = directives.Layout('data')
+    skip = directives.Layout("skip")
+    header = directives.Layout("header")
+    data = directives.Layout("data")
 
     ls = scoresheet.LayoutSection([header, skip, data])
     for directive in ls:
@@ -64,9 +69,9 @@ def test_section_iterates():
 
 
 def test_layout_section():
-    skip = directives.Layout('skip')
-    header = directives.Layout('header')
-    data = directives.Layout('data')
+    skip = directives.Layout("skip")
+    header = directives.Layout("header")
+    data = directives.Layout("data")
 
     ls = scoresheet.LayoutSection([header, data])
     assert ls.is_valid()
@@ -95,20 +100,20 @@ def test_layout_section():
 
 def test_layout_section_with_string_ary():
     ls = scoresheet.LayoutSection()
-    ls.append_from_strings(['header'])
+    ls.append_from_strings(["header"])
     assert len(ls) == 1
     with pytest.raises(directives.DirectiveError):
         ls.append_from_strings([])
     with pytest.raises(directives.DirectiveError):
-        ls.append_from_strings(['foo'])
+        ls.append_from_strings(["foo"])
 
 
 def test_rename_section_with_string_list():
     s = scoresheet.RenameSection()
-    s.append_from_strings(['foo', 'bar'])
+    s.append_from_strings(["foo", "bar"])
     assert len(s) == 1
-    assert s.map_name('foo') == 'bar'
-    assert s.map_name('baz') == 'baz'
+    assert s.map_name("foo") == "bar"
+    assert s.map_name("baz") == "baz"
 
 
 def test_rename_section_dupes():
@@ -138,12 +143,12 @@ def test_transform_section_getitem():
     s = scoresheet.TransformSection()
     d = directives.Transform("foo", "map(1:5, 1:5)")
     s.append_directive(d)
-    assert s['foo'] == d
+    assert s["foo"] == d
 
 
 def test_transform_section_getitem_with_blank():
     s = scoresheet.TransformSection()
-    assert type(s['']) == directives.Transform
+    assert type(s[""]) == directives.Transform
 
 
 def test_score_section_dupes():
@@ -159,7 +164,7 @@ def test_score_section_dupes():
 
 def test_aggregator_section_dupes():
     s = scoresheet.AggregatorSection()
-    d = directives.Aggregator('foo', 'mean(bar)')
+    d = directives.Aggregator("foo", "mean(bar)")
     s.append_directive(d)
     with pytest.raises(scoresheet.SectionError):
         s.append_directive(d)

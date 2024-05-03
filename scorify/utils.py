@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of the scorify package
-# Copyright (c) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (c) 2024 Board of Regents of the University of Wisconsin System
 from __future__ import absolute_import
 
 import re
@@ -9,10 +9,8 @@ import math
 float_stripper = re.compile(r"\.0*$")
 
 
-def pp(val, float_places=2, none_val='NaN'):
-    mapping = {
-        float: float_pp
-    }
+def pp(val, float_places=2, none_val="NaN"):
+    mapping = {float: float_pp}
     mapper = mapping.get(type(val))
     if mapper:
         return mapper(val, float_places, none_val)
@@ -22,7 +20,7 @@ def pp(val, float_places=2, none_val='NaN'):
     return str(val)
 
 
-def float_pp(num, float_places=2, none_val='NaN'):
+def float_pp(num, float_places=2, none_val="NaN"):
     if math.isnan(num) or math.isinf(num):
         return none_val
     rounded = str(round(num, float_places))
