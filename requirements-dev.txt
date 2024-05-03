@@ -1,8 +1,7 @@
 pytest
-IPython
+ipython
 docopt
 schema
 openpyxl
 numpy
 pandas
-scipi

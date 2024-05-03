@@ -137,7 +137,7 @@ def score_data(arguments):
         df.apply_exclusions(ss.exclude_section)
         # Actual scoring!
         scored = scorer.Scorer.score(df, ss.transform_section, ss.score_section)
-        scorer.Scorer.add_measures(scored, ss.measure_section)
+        scorer.Scorer.add_measures(scored, ss.aggregator_section)
         print_data(arguments["--output"], scored, validated["--nans-as"], dialect)
 
     except datafile.ExclusionError as err:

@@ -6,7 +6,7 @@ from __future__ import absolute_import
 from collections import defaultdict
 from scorify.errors import HaystackError
 
-NaN = float('nan')
+NaN = float("nan")
 
 
 class ScoredData(object):
@@ -44,9 +44,9 @@ class Scorer(object):
             return directive.output_name
         name = directive.column
         if directive.measure_name != "None" and len(directive.measure_name) > 0:
-            name += ': ' + directive.measure_name
+            name += ": " + directive.measure_name
         if len(directive.transform) > 0:
-            name += ': ' + directive.transform
+            name += ": " + directive.transform
         return name
 
     @classmethod
@@ -70,7 +70,7 @@ class Scorer(object):
                     kept[name] = k[d.column]
                 except KeyError as err:
                     # No kept data for this column? No worries, just blank is fine
-                    kept[name] = ''
+                    kept[name] = ""
 
             out.keep.append(kept)
 
@@ -81,19 +81,19 @@ class Scorer(object):
                     tx = transform_section[s.transform]
                 except KeyError as exc:
                     raise TransformError(
-                        "transforms", "Key not found: " + s.transform,
-                        transform_section.known_transforms())
+                        "transforms",
+                        "Key not found: " + s.transform,
+                        transform_section.known_transforms(),
+                    )
 
                 name = kls.score_name(s)
-                if (ignore_missing and s.column not in r):
-                    sval = ''
+                if ignore_missing and s.column not in r:
+                    sval = ""
                 else:
                     try:
                         sval = tx.transform(r[s.column])
                     except KeyError as err:
-                        raise ScoringError(
-                            "data columns", str(err),
-                            datafile.header)
+                        raise ScoringError("data columns", str(err), datafile.header)
                     except ValueError:
                         sval = NaN
                 scored[name] = sval
@@ -102,16 +102,17 @@ class Scorer(object):
         return out
 
     @classmethod
-    def add_measures(kls, scored_data, measure_section):
-        for m in measure_section.directives:
+    def add_measures(kls, scored_data, aggregatror_section):
+        for m in aggregatror_section.directives:
             scored_data.header.append(m.name)
         for row in scored_data.data:
-            for m in measure_section.directives:
+            for m in aggregatror_section.directives:
                 try:
                     cols = scored_data.columns_for(m.to_use)
                 except KeyError as exc:
                     raise AggregationError(
-                        "measures", str(exc), scored_data.known_measures())
+                        "measures", str(exc), scored_data.known_measures()
+                    )
                 vals = [row[col] for col in cols]
                 try:
                     row[m.name] = m.agg_fx(vals)
