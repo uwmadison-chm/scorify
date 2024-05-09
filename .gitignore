@@ -49,3 +49,4 @@ tests/output
 
 # Don't need to track editor stuff
 .nova
+.vscode
