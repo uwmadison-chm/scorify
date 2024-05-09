@@ -103,33 +103,14 @@ def score_data(scoresheet_file, data_file, exclusions, dialect, sheet):
         exclusions_data = read_data(exclusions, dialect=dialect)
         exc_ss = scoresheet.Reader(exclusions_data).read_into_scoresheet()
         exc = exc_ss.exclude_section
-        try:
-            df.apply_exclusions(exc)
-        except datafile.ExclusionError as err:
-            logger.critical("Error in exclusions of {0}:".format(exclusions))
-            logger.critical(err)
-            sys.exit(1)
+        df.apply_exclusions(exc)
 
-    try:
-        # Apply exclusions from scoresheet
-        df.apply_exclusions(ss.exclude_section)
-        # Actual scoring!
-        scored = scorer.Scorer.score(df, ss.transform_section, ss.score_section)
-        scorer.Scorer.add_measures(scored, ss.aggregator_section)
-        return scored
-
-    except datafile.ExclusionError as err:
-        logger.critical("Error in exclusions of {0}:".format(arguments["<scoresheet>"]))
-        logger.critical(err)
-        sys.exit(1)
-    except (scorer.ScoringError, scorer.TransformError) as err:
-        logger.critical("Error in score of {0}:".format(arguments["<scoresheet>"]))
-        logger.critical(err)
-        sys.exit(1)
-    except scorer.AggregationError as err:
-        logger.critical("Error in measures of {0}:".format(arguments["<scoresheet>"]))
-        logger.critical(err)
-        sys.exit(1)
+    # Apply exclusions from scoresheet
+    df.apply_exclusions(ss.exclude_section)
+    # Actual scoring!
+    scored = scorer.Scorer.score(df, ss.transform_section, ss.score_section)
+    scorer.Scorer.add_measures(scored, ss.aggregator_section)
+    return scored
 
 
 def print_data(scored_data, output, nans_as, dialect):
@@ -157,13 +138,27 @@ def main(argv):
         logger.setLevel(logging.CRITICAL)
     logger.debug(val)
 
-    scored = score_data(
-        val["<scoresheet>"],
-        val["<datafile>"],
-        val["--exclusions"],
-        val["--dialect"],
-        val["--sheet"],
-    )
+    try:
+        scored = score_data(
+            val["<scoresheet>"],
+            val["<datafile>"],
+            val["--exclusions"],
+            val["--dialect"],
+            val["--sheet"],
+        )
+    except datafile.ExclusionError as err:
+        logger.critical("Error in exclusions")
+        logger.critical(err)
+        sys.exit(1)
+    except (scorer.ScoringError, scorer.TransformError) as err:
+        logger.critical("Error in score of {0}:".format(val["<scoresheet>"]))
+        logger.critical(err)
+        sys.exit(1)
+    except scorer.AggregationError as err:
+        logger.critical("Error in measures of {0}:".format(val["<scoresheet>"]))
+        logger.critical(err)
+        sys.exit(1)
+
     print_data(scored, val["--output"], val["--nans-as"], val["--dialect"])
 
 
