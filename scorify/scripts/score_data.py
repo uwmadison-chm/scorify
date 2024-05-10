@@ -34,7 +34,7 @@ import scorify
 from docopt import docopt
 from schema import Schema, Use, Or, And, SchemaError
 from scorify import scoresheet, datafile, scorer
-from scorify.utils import pp
+from scorify.utils import pp, SafeFormatMap
 from scorify.excel_reader import ExcelReader
 
 logging.basicConfig(format="%(message)s")
@@ -113,14 +113,17 @@ def score_data(scoresheet_file, data_file, exclusions, dialect, sheet):
     return scored
 
 
-def print_data(scored_data, output, nans_as, dialect):
+def print_data(scored_data, output, nans_as, dialect, header_map=None):
     if output is None:
         out = csv.writer(sys.stdout, dialect=dialect)
     else:
         outfile = open(output, "w")
         out = csv.writer(outfile, dialect=dialect)
 
-    out.writerow(scored_data.header)
+    headers_mapped = [h.format_map(header_map) for h in scored_data.header]
+    logger.debug(f"Mapped headers to {headers_mapped}")
+    logger.info(f"Writing to {output}")
+    out.writerow(headers_mapped)
     for row in scored_data.keep:
         rk = [row.get(h, "") for h in scored_data.header]
         out.writerow(rk)

@@ -33,16 +33,14 @@ Options:
                           should we use? Indexed from 0. [default: 0]
     --no-format-headers   Don't do string replacement in output headers
     --nans-as=<string>    Print NaNs as this [default: NaN]
-    --ignore-missing      Assume blank data if a column named in the
-                          scoresheet is missing from the data
     -q --quiet            Don't print errors
     -v, --verbose         Print extra debugging output
 """
 
-# Yes we're just going to use score_data for this. It's a little gross, but it
-# also means the semantics of scoring are consistent between the two scripts.
+# We're going to use score_data to do the actual scoring
 import scorify
 from scorify.scripts import score_data
+from scorify.utils import SafeFormatMap
 
 from docopt import docopt
 from schema import Schema, Use, Or, And, SchemaError
@@ -70,9 +68,8 @@ def validate_arguments(args):
             "<scoresheet>": str,
             "<data>": str,
             "<output>": str,
-            "--sheet": Use(int),
+            "--sheet": str,
             "--nans-as": str,
-            "--ignore-missing": bool,
             "--dry-run": bool,
             "--no-format-headers": bool,
             "--quiet": bool,
@@ -85,57 +82,87 @@ def validate_arguments(args):
     except SchemaError as e:
         logger.error(f"Error: {e}")
         sys.exit(1)
-    if validated["--quiet"]:
-        logger.setLevel(logging.CRITICAL)
-    if validated["--verbose"]:
-        logger.setLevel(logging.DEBUG)
     validated["--format-headers"] = not validated["--no-format-headers"]
     return validated
 
 
+def format_str_or_none(value, row):
+    """
+    Format a string with a row from our CSV file, or return None if the value's
+    not defined.
+    """
+    return value.format_map(row) if value else None
+
+
+def format_int_or_none(value, row):
+    """
+    Format an int (and return it as int type) or return None if the value's not
+    defined.
+    """
+    return int(value.format_map(row)) if value else None
+
+
+def score_single(scoresheet_filename, data_filename, sheet_num):
+    with open(scoresheet_filename, "r", encoding="utf-8-sig") as scoresheet_file:
+        with open(data_filename, "r", encoding="utf-8-sig") as data_file:
+            return score_data.score_data(
+                scoresheet_file, data_file, None, "excel", sheet_num
+            )
+
+
+def format_and_print(scored_data, output_filename, format_headers, row, nans_as):
+    header_formatter = row if format_headers else None
+    score_data.print_data(
+        scored_data, output_filename, nans_as, "excel", header_formatter
+    )
+
+
 def score_multi(
-    multi_csv,
-    scoresheet,
-    data,
-    output,
-    sheet,
-    dry_run,
-    format_hedaers,
-    nans_as,
-    ignore_missing,
+    multi_csv, scoresheet, data, output, sheet, dry_run, format_headers, nans_as
 ):
     csv_reader = DictReader(multi_csv)
     for row in csv_reader:
         logger.debug(f"Processing row: {row}")
-        # score_data.main(
-        #     {
-        #         "<scoresheet>": scoresheet.format_map(row),
-        #         "<datafile>": data.format_map(row),
-        #         "--output": output.format_map(row),
-        #         "--sheet": sheet,
-        #         "--nans-as": nans_as,
-        #         "--ignore-missing": ignore_missing,
-        #         "--quiet": True,
-        #         "--verbose": False,
-        #     }
-        # )
+        row_safe = SafeFormatMap(row)
+        scoresheet_filename = Path(scoresheet.format_map(row_safe)).expanduser()
+        data_filename = Path(data.format_map(row_safe)).expanduser()
+        output_filename = Path(output.format_map(row_safe)).expanduser()
+        sheet_num = format_int_or_none(sheet, row_safe)
+
+        logger.info(f"Scoring {data_filename} with {scoresheet_filename}")
+        scored = None
+        try:
+            scored = score_single(scoresheet_filename, data_filename, sheet_num)
+        except RuntimeError as e:
+            scored_data.append(None)
+            logger.error(f"Error scoring {data_filename}: {e}")
+            continue
+        if dry_run:
+            logger.info("--dry-run: not writing output")
+        else:
+            format_and_print(scored, output_filename, format_headers, row_safe, nans_as)
 
 
 def main():
     args = docopt(__doc__, version=scorify.__version__)
-    validated = validate_arguments(args)
-    logger.debug(f"Validated arguments: {validated}")
+    val = validate_arguments(args)
+    if val["--quiet"]:
+        logger.setLevel(logging.CRITICAL)
+    if val["--verbose"]:
+        logger.setLevel(logging.DEBUG)
+    score_data.logger = logger
+
+    logger.debug(f"validated arguments: {val}")
     sys.exit(
         score_multi(
-            validated["<multi_csv>"],
-            validated["<scoresheet>"],
-            validated["<data>"],
-            validated["<output>"],
-            validated["--sheet"],
-            validated["--dry-run"],
-            validated["--format-headers"],
-            validated["--nans-as"],
-            validated["--ignore-missing"],
+            val["<multi_csv>"],
+            val["<scoresheet>"],
+            val["<data>"],
+            val["<output>"],
+            val["--sheet"],
+            val["--dry-run"],
+            val["--format-headers"],
+            val["--nans-as"],
         )
     )
 

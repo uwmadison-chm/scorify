@@ -25,3 +25,13 @@ def float_pp(num, float_places=2, none_val="NaN"):
         return none_val
     rounded = str(round(num, float_places))
     return float_stripper.sub("", rounded)
+
+
+class SafeFormatMap(dict):
+    """
+    for passing to format_map; returns {} for missing keys rather than raising
+    KeyError
+    """
+
+    def __missing__(self, key):
+        return "{" + key + "}"
