@@ -1,4 +1,4 @@
-scoresheet,data,event
-panas,input.csv,t1
-ffmq,input.csv,t1
-panas,input.csv,t2
+instrument,event
+panas,t1
+ffmq,t1
+panas,t2

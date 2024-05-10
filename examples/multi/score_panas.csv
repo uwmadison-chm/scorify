@@ -1,0 +1,5 @@
+layout,header
+layout,data
+
+score,id
+score,panas_val,,,{event}_panas_val
