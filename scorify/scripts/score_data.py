@@ -34,7 +34,7 @@ import scorify
 from docopt import docopt
 from schema import Schema, Use, Or, And, SchemaError
 from scorify import scoresheet, datafile, scorer
-from scorify.utils import pp, SafeFormatMap
+from scorify.utils import pp
 from scorify.excel_reader import ExcelReader
 
 logging.basicConfig(format="%(message)s")

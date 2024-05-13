@@ -40,10 +40,9 @@ Options:
 # We're going to use score_data to do the actual scoring
 import scorify
 from scorify.scripts import score_data
-from scorify.utils import SafeFormatMap
 
 from docopt import docopt
-from schema import Schema, Use, Or, And, SchemaError
+from schema import Schema, Use, SchemaError
 
 from csv import DictReader
 from pathlib import Path
@@ -123,11 +122,10 @@ def score_multi(
     csv_reader = DictReader(multi_csv)
     for row in csv_reader:
         logger.debug(f"Processing row: {row}")
-        row_safe = SafeFormatMap(row)
-        scoresheet_filename = Path(scoresheet.format_map(row_safe)).expanduser()
-        data_filename = Path(data.format_map(row_safe)).expanduser()
-        output_filename = Path(output.format_map(row_safe)).expanduser()
-        sheet_num = format_int_or_none(sheet, row_safe)
+        scoresheet_filename = Path(scoresheet.format_map(row)).expanduser()
+        data_filename = Path(data.format_map(row)).expanduser()
+        output_filename = Path(output.format_map(row)).expanduser()
+        sheet_num = format_int_or_none(sheet, row)
 
         logger.info(f"Scoring {data_filename} with {scoresheet_filename}")
         scored = None
@@ -140,7 +138,7 @@ def score_multi(
         if dry_run:
             logger.info("--dry-run: not writing output")
         else:
-            format_and_print(scored, output_filename, format_headers, row_safe, nans_as)
+            format_and_print(scored, output_filename, format_headers, row, nans_as)
 
 
 def main():
