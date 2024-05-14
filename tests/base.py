@@ -1,7 +1,15 @@
-import os
+from pathlib import Path
+from pytest import fixture
+
 
 def from_this_dir(filename):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+    return str(Path(__file__).parent / filename)
+
 
 def from_subdir(subdir, filename):
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), subdir, filename)
+    return str(Path(__file__).parent / subdir / filename)
+
+
+@fixture
+def test_dir():
+    return Path(__file__).parent
