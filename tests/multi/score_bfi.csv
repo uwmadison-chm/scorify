@@ -1,0 +1,9 @@
+﻿layout,header,,,
+layout,data,,,
+,,,,
+score,id,,,
+score,bfi_oe,,,{event}_bfi_oe
+score,bfi_con,,,{event}_bfi_con
+score,bfi_extra,,,{event}_bfi_extra
+score,bfi_ag,,,{event}_bfi_ag
+score,bfi_neu,,,{event}_bfi_neu

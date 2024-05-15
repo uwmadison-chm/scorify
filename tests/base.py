@@ -11,5 +11,5 @@ def from_subdir(subdir, filename):
 
 
 @fixture
-def test_dir():
+def test_path():
     return Path(__file__).parent

@@ -133,7 +133,7 @@ def print_data(scored_data, output, nans_as, dialect, header_map=None):
 
 
 def main(argv):
-    args = docopt(__doc__, argv, version="Scorify {0}".format(scorify.__version__))
+    args = docopt(__doc__, argv, version=f"Scorify {scorify.__version__}")
     val = validate_arguments(args)
     if val["--verbose"]:
         logger.setLevel(logging.DEBUG)
@@ -165,5 +165,9 @@ def main(argv):
     print_data(scored, val["--output"], val["--nans-as"], val["--dialect"])
 
 
-if __name__ == "__main__":
+def entry_point():
     main(sys.argv[1:])
+
+
+if __name__ == "__main__":
+    entry_point()

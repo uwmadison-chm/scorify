@@ -56,14 +56,16 @@ logger.setLevel(logging.INFO)
 
 
 def open_for_read(fname):
-    fpath = Path(fname)
-    return open(fpath.expanduser(), "r", encoding="utf-8-sig")
+    logger.error(fname)
+    if not Path(fname).exists():
+        logger.error(f"File {fname} does not exist!!!!!")
+    return Path(fname).expanduser().open("r", encoding="utf-8-sig")
 
 
 def validate_arguments(args):
     s = Schema(
         {
-            "<multi_csv>": Use(open_for_read, error="Can't open multi_csv file"),
+            "<multi_csv>": Use(open_for_read),
             "<scoresheet>": str,
             "<data>": str,
             "<output>": str,
@@ -136,13 +138,13 @@ def score_multi(
             logger.error(f"Error scoring {data_filename}: {e}")
             continue
         if dry_run:
-            logger.info("--dry-run: not writing output")
+            logger.info(f"--dry-run: would have written to {output_filename}")
         else:
             format_and_print(scored, output_filename, format_headers, row, nans_as)
 
 
-def main():
-    args = docopt(__doc__, version=scorify.__version__)
+def main(argv):
+    args = docopt(__doc__, argv, version=f"Scorify {scorify.__version__}")
     val = validate_arguments(args)
     if val["--quiet"]:
         logger.setLevel(logging.CRITICAL)
@@ -151,19 +153,21 @@ def main():
     score_data.logger = logger
 
     logger.debug(f"validated arguments: {val}")
-    sys.exit(
-        score_multi(
-            val["<multi_csv>"],
-            val["<scoresheet>"],
-            val["<data>"],
-            val["<output>"],
-            val["--sheet"],
-            val["--dry-run"],
-            val["--format-headers"],
-            val["--nans-as"],
-        )
+    score_multi(
+        val["<multi_csv>"],
+        val["<scoresheet>"],
+        val["<data>"],
+        val["<output>"],
+        val["--sheet"],
+        val["--dry-run"],
+        val["--format-headers"],
+        val["--nans-as"],
     )
 
 
+def entry_point():
+    main(sys.argv[1:])
+
+
 if __name__ == "__main__":
-    main()
+    entry_point()

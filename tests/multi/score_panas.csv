@@ -1,0 +1,6 @@
+﻿layout,header,,,
+layout,data,,,
+,,,,
+score,id,,,
+score,panas_pa,,,{event}_panas_pa
+score,panas_na,,,{event}_panas_na
