@@ -127,11 +127,9 @@ def score_multi(
         sheet_num = format_int_or_none(sheet, row)
 
         logger.info(f"Scoring {data_filename} with {scoresheet_filename}")
-        scored = None
         try:
             scored = score_single(scoresheet_filename, data_filename, sheet_num)
         except RuntimeError as e:
-            scored_data.append(None)
             logger.error(f"Error scoring {data_filename}: {e}")
             continue
         if dry_run:
