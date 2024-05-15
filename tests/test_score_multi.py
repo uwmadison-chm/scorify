@@ -26,7 +26,7 @@ def test_missing_multifile(capsys):
         assert "multi_csv" in err
 
 
-def test_success(capsys, pytestconfig, tmp_path):
+def test_success(pytestconfig, tmp_path):
     data_dir = pytestconfig.rootpath / "tests" / "multi"
     multi_arg = data_dir / "success.csv"
     scoresheet_arg = data_dir / "score_{instrument}.csv"
