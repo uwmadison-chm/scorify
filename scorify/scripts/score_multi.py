@@ -56,9 +56,6 @@ logger.setLevel(logging.INFO)
 
 
 def open_for_read(fname):
-    logger.error(fname)
-    if not Path(fname).exists():
-        logger.error(f"File {fname} does not exist!!!!!")
     return Path(fname).expanduser().open("r", encoding="utf-8-sig")
 
 
