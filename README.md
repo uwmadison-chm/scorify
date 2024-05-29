@@ -273,6 +273,12 @@ and run it on data that looks like:
 | ppt2    | 2               | 5           | 1               | 1.5         | 5         | 0.3             |
 
 
+## Running multiple scoresheets
+
+Scorify now ships with a tool called `score_multi` that takes a CSV file, and for each row in the file (except headers), runs `score_data`. The input, scoresheet, and output options are templates formatted with python's `format_map()` function with the current row of the CSV file as a map. In addition, the output headers may similarly be formatted with `format_map()`.
+
+TODO: More documentation here! For now, run `score_multi -h`
+
 ## Reliability tool
 
 The `reliability` command reads a scoresheet and a datafile and outputs
