@@ -52,7 +52,7 @@ def validate_arguments(arguments):
             "<scoresheet>": Use(open_for_read, error="Can't open scoresheet"),
             "<datafile>": Use(open_for_read, error="Can't open datafile"),
             "--sheet": Use(int),
-            "--output": str,
+            "--output": Or(str, None),
             "--exclusions": Or(None, Use(open_for_read, error="Can't open exclusions")),
             "--dialect": And(
                 Use(str.lower),
