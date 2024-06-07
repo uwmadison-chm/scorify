@@ -129,7 +129,7 @@ def score_multi(
         logger.info(f"Scoring {data_filename} with {scoresheet_filename}")
         try:
             scored = score_single(scoresheet_filename, data_filename, sheet_num)
-        except RuntimeError as e:
+        except Exception as e:
             logger.error(f"Error scoring {data_filename}: {e}")
             continue
         if dry_run:
