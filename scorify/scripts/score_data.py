@@ -19,7 +19,7 @@ Options:
   --dialect=<dialect>  The dialect for CSV files; options are 'excel' or
                        'excel-tab' [default: excel]
   --output=<file>      An output file to write to (if blank, writes to STDOUT)
-  -q --quiet           Don't print errors
+  -q --quiet           Only print errors
   -v, --verbose        Print extra debugging output
 """
 
@@ -138,7 +138,7 @@ def main(argv):
     if val["--verbose"]:
         logger.setLevel(logging.DEBUG)
     elif val["--quiet"]:
-        logger.setLevel(logging.CRITICAL)
+        logger.setLevel(logging.WARNING)
     logger.debug(val)
 
     try:

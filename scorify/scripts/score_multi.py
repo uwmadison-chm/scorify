@@ -33,7 +33,7 @@ Options:
                           should we use? Indexed from 0. [default: 0]
     --no-format-headers   Don't do string replacement in output headers
     --nans-as=<string>    Print NaNs as this [default: NaN]
-    -q --quiet            Don't print errors
+    -q --quiet            Only print errors
     -v, --verbose         Print extra debugging output
 """
 
@@ -142,7 +142,7 @@ def main(argv):
     args = docopt(__doc__, argv, version=f"Scorify {scorify.__version__}")
     val = validate_arguments(args)
     if val["--quiet"]:
-        logger.setLevel(logging.CRITICAL)
+        logger.setLevel(logging.WARNING)
     if val["--verbose"]:
         logger.setLevel(logging.DEBUG)
     score_data.logger = logger
