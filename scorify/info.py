@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-version = __VERSION__ = "2024.06.07"
+version = __VERSION__ = "2024.07.19"
 author = "Nathan Vack"
 author_email = "njvack@wisc.edu"
 license = "MIT"

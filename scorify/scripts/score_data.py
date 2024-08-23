@@ -120,8 +120,13 @@ def print_data(scored_data, output, nans_as, dialect, header_map=None):
         outfile = open(output, "w")
         out = csv.writer(outfile, dialect=dialect)
 
-    headers_mapped = [h.format_map(header_map) for h in scored_data.header]
-    logger.debug(f"Mapped headers to {headers_mapped}")
+    if header_map is None:
+        headers_mapped = scored_data.header
+        logger.debug("No header map provided, using original headers")
+    else:
+        headers_mapped = [h.format_map(header_map) for h in scored_data.header]
+        logger.debug(f"Mapped headers to {headers_mapped}")
+
     logger.info(f"Writing to {output}")
     out.writerow(headers_mapped)
     for row in scored_data.keep:
